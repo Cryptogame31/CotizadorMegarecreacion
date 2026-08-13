@@ -1,0 +1,589 @@
+{
+  "settings": {
+    "businessName": "Megarecreación",
+    "businessSubtitle": "Inflables, Carros de Comida y Eventos",
+    "businessLogoUrl": "/assets/logo.jpg",
+    "contractText": "<h4 style=\"text-align: center; margin-bottom: 1rem;\">CONTRATO DE PRESTACIÓN DE SERVICIOS DE RECREACIÓN - MEGARECREACIÓN</h4><p>Entre los suscritos a saber, por una parte <strong>MEGARECREACIÓN</strong> y por otra parte el cliente cuyos datos constan en la cotización inicial, se conviene celebrar el presente acuerdo para la prestación de servicios recreativos y de entretenimiento según las especificaciones indicadas.</p><br><p><strong>PRIMERO - OBJETO:</strong> Megarecreación se compromete a prestar los servicios de alquiler de inflables, carros de alimentación, personajes, animadores o actividades empresariales especificadas.</p><p><strong>SEGUNDO - LOGÍSTICA Y MONTAJE:</strong> El cliente facilitará el espacio físico adecuado y una conexión eléctrica estable de 110V a menos de 10 metros del lugar de ubicación del inflable o carrito de comida. El equipo de logística llegará 1 hora antes para el montaje.</p><p><strong>TERCERO - PRECIO Y PAGO:</strong> El valor acordado se cancelará con un abono del 50% para separar la fecha y el saldo restante del 50% al finalizar el montaje de los equipos el día del evento.</p><p><strong>CUARTO - CONDICIONES CLIMÁTICAS:</strong> En caso de lluvia intensa o vientos fuertes que pongan en riesgo la seguridad de los participantes o la integridad de los inflables, estos se apagarán temporalmente sin que esto suponga reembolso de dinero.</p>",
+    "telefonoContacto1": "3163048505",
+    "telefonoContacto2": "3197188973",
+    "themePalette": "rose",
+    "themeFont": "outfit",
+    "themeFontSize": "16px"
+  },
+  "categories": [
+    {
+      "id": "inflables",
+      "name": "Inflables",
+      "description": "Selecciona los inflables que deseas alquilar. Todos incluyen montaje y operario.",
+      "extraField": "capacity",
+      "extraLabel": "Capacidad"
+    },
+    {
+      "id": "alimentos",
+      "name": "Carros de Comida",
+      "description": "Carritos clásicos de feria con porciones ilimitadas. Haz clic para seleccionar y ajustar porciones.",
+      "extraField": "minQty",
+      "extraLabel": "Cantidad Mínima"
+    },
+    {
+      "id": "shows",
+      "name": "Shows y Animaciones",
+      "description": "Animadores profesionales, shows temáticos y dinámicas cooperativas.",
+      "extraField": "duration",
+      "extraLabel": "Duración"
+    },
+    {
+      "id": "corporativos",
+      "name": "Pausas Activas y Corporativo",
+      "description": "Actividades recreativas dirigidas para empresas e integraciones.",
+      "extraField": "duration",
+      "extraLabel": "Duración"
+    },
+    {
+      "id": "adicionales",
+      "name": "Adicionales y Sonido",
+      "description": "Servicios complementarios de sonido, luces y efectos especiales.",
+      "extraField": "none",
+      "extraLabel": ""
+    }
+  ],
+  "products": {
+    "inflables": [
+      {
+        "id": "inf-castillo",
+        "name": "Castillo Inflable Multicolor",
+        "price": 180000,
+        "description": "Medidas: 3m x 3m. Ideal para niños de 3 a 7 años. Incluye motor de inflado y operario de seguridad.",
+        "capacity": "Hasta 8 niños simultáneamente"
+      },
+      {
+        "id": "inf-tobogan",
+        "name": "Tobogán Gigante con Piscina",
+        "price": 280000,
+        "description": "Medidas: 6m largo x 3.5m ancho x 4m alto. Se puede usar seco o con agua. Incluye motor y operario.",
+        "capacity": "Hasta 12 niños simultáneamente"
+      },
+      {
+        "id": "inf-obstaculos",
+        "name": "Pista de Obstáculos Extrema",
+        "price": 350000,
+        "description": "Medidas: 8m largo x 3m ancho. Ideal para desafíos, carreras y competencias infantiles o juveniles.",
+        "capacity": "Hasta 15 personas simultáneamente"
+      }
+    ],
+    "alimentos": [
+      {
+        "id": "ali-hotdogs",
+        "name": "Carro de Perros Calientes (Hot Dogs)",
+        "price": 4000,
+        "description": "Porción individual. Incluye pan, salchicha, papita picada y variedad de salsas básicas. Mínimo 50 porciones.",
+        "minQty": 50
+      },
+      {
+        "id": "ali-algodon",
+        "name": "Carro de Algodón de Azúcar",
+        "price": 3000,
+        "description": "Porción individual. Algodones gigantes de colores rosado o azul. Mínimo 50 porciones.",
+        "minQty": 50
+      },
+      {
+        "id": "ali-crispetas",
+        "name": "Carro de Crispetas de Maíz (Popcorn)",
+        "price": 2500,
+        "description": "Porción individual en bolsa. Crispetas de sal calentitas hechas en máquina clásica. Mínimo 50 porciones.",
+        "minQty": 50
+      },
+      {
+        "id": "ali-raspados",
+        "name": "Carro de Raspados de Hielo",
+        "price": 3200,
+        "description": "Porción individual en vaso. Hielo raspado con jarabes de sabores (fresa, limón, maracuyá) y leche condensada. Mínimo 50 porciones.",
+        "minQty": 50
+      }
+    ],
+    "shows": [
+      {
+        "id": "sho-basico",
+        "name": "Recreación y Animación Básica",
+        "price": 220000,
+        "description": "3 horas de servicio. Incluye 2 animadores, juegos grupales, dinámicas, ronda de bailes, globoflexia y pintacaritas.",
+        "duration": "3 horas"
+      },
+      {
+        "id": "sho-magia",
+        "name": "Show de Magia Profesional e Ilusionismo",
+        "price": 380000,
+        "description": "Show interactivo de 1 hora con mago profesional, trucos de cartas, desapariciones y participación de los niños.",
+        "duration": "1 hora"
+      },
+      {
+        "id": "sho-titeres",
+        "name": "Show de Títeres Lúdico",
+        "price": 180000,
+        "description": "45 minutos de show con teatrino y títeres de personajes divertidos que enseñan valores lúdicos.",
+        "duration": "45 minutos"
+      },
+      {
+        "id": "sho-personaje",
+        "name": "Personaje Temático Especial",
+        "price": 120000,
+        "description": "Acompañamiento de 1 hora de tu personaje favorito (Superhéroes, Princesas, Spiderman, Mickey, etc.) para fotos y pastel.",
+        "duration": "1 hora"
+      }
+    ],
+    "corporativos": [
+      {
+        "id": "corp-gymkana",
+        "name": "Gymkana y Desafío de Integración",
+        "price": 450000,
+        "description": "Ideal para empresas. Juegos por estaciones, dinámicas de comunicación, liderazgo y trabajo en equipo. Hasta 50 personas.",
+        "duration": "4 horas"
+      },
+      {
+        "id": "corp-pausas-express",
+        "name": "Pausas Activas de Oficina (Express)",
+        "price": 120000,
+        "description": "Sesión de 15-20 minutos para hasta 20 empleados. Estiramientos musculares y relajación para evitar fatiga laboral.",
+        "duration": "20 minutos"
+      },
+      {
+        "id": "corp-pausas-salud",
+        "name": "Pausas Activas Temáticas y Saludables",
+        "price": 180000,
+        "description": "Sesión de 30-40 minutos. Incluye dinámicas de gimnasia cerebral, estiramientos de cuello, manos y espalda, y tips de ergonomía.",
+        "duration": "40 minutos"
+      }
+    ],
+    "adicionales": [
+      {
+        "id": "adi-sonido",
+        "name": "Sonido Semiprofesional con Micrófono",
+        "price": 150000,
+        "description": "Una cabina activa, micrófono inalámbrico, base para micrófono y música por 4 horas."
+      },
+      {
+        "id": "adi-luces",
+        "name": "Luces Audiorítmicas y Luces LED",
+        "price": 80000,
+        "description": "Estructura en T con 4 luces LED de colores y efectos rítmicos para animar el baile."
+      },
+      {
+        "id": "adi-burbujas",
+        "name": "Máquina de Burbujas de Alto Rendimiento",
+        "price": 60000,
+        "description": "Máquina continua de burbujas con líquido especial para llenar la pista durante los shows."
+      },
+      {
+        "id": "adi-humo",
+        "name": "Máquina de Humo",
+        "price": 50000,
+        "description": "Máquina de humo con líquido aromatizado para acompañar los shows de luces."
+      }
+    ]
+  },
+  "users": [
+    {
+      "uid": "user-admin",
+      "email": "admin@megarecreacion.com",
+      "password": "123456",
+      "name": "Mauricio Gómez",
+      "role": "superadmin",
+      "phone": "3163048505"
+    },
+    {
+      "uid": "user-compras",
+      "email": "compras@megarecreacion.com",
+      "password": "123456",
+      "name": "Adriana Torres",
+      "role": "compras",
+      "phone": "3197188973"
+    },
+    {
+      "uid": "user-recreador",
+      "email": "recreador@megarecreacion.com",
+      "password": "123456",
+      "name": "Sebastián Pérez",
+      "role": "recreacion",
+      "phone": "3123456789"
+    },
+    {
+      "uid": "user-logistica",
+      "email": "logistica@megarecreacion.com",
+      "password": "123456",
+      "name": "Carlos Ruíz",
+      "role": "logistica",
+      "phone": "3139876543"
+    },
+    {
+      "uid": "user-cliente",
+      "email": "cliente@megarecreacion.com",
+      "password": "123456",
+      "name": "Familia Restrepo",
+      "role": "cliente",
+      "phone": "3154567890",
+      "eventId": "evt-1786660943625"
+    }
+  ],
+  "quotations": [
+    {
+      "id": "q-demo-1",
+      "nombre": "Liliana Restrepo",
+      "email": "cliente@megarecreacion.com",
+      "telefono": "3154567890",
+      "tipoEvento": "fiesta_infantil",
+      "fecha": "2026-08-30",
+      "invitados": 60,
+      "inflables": [
+        "inf-castillo"
+      ],
+      "alimentos": [
+        {
+          "id": "ali-hotdogs",
+          "qty": 60
+        },
+        {
+          "id": "ali-algodon",
+          "qty": 50
+        }
+      ],
+      "shows": [
+        "sho-basico"
+      ],
+      "corporativos": [],
+      "adicionales": [
+        "adi-sonido",
+        "adi-burbujas"
+      ],
+      "total": 770000,
+      "status": "aprobada",
+      "date": "2026-08-13T16:00:00.000Z",
+      "discount": 30000,
+      "discountLabel": "Descuento por combo",
+      "discountPercent": 3.75
+    }
+  ],
+  "events": [
+    {
+      "id": "evt-demo-1",
+      "quotationId": "q-demo-1",
+      "nombre": "Cumpleaños de Tomás Restrepo",
+      "clienteId": "user-cliente",
+      "fecha": "2026-08-30",
+      "horaInicio": "14:00",
+      "direccion": "Calle 45 # 12-34, Envigado",
+      "invitados": 60,
+      "inflables": [
+        "inf-castillo"
+      ],
+      "alimentos": [
+        {
+          "id": "ali-hotdogs",
+          "qty": 60,
+          "sabores": "Salsas tradicionales, papitas y cebolla opcional"
+        },
+        {
+          "id": "ali-algodon",
+          "qty": 50,
+          "sabores": "Azúcar de color Rosado"
+        }
+      ],
+      "shows": [
+        "sho-basico"
+      ],
+      "corporativos": [],
+      "adicionales": [
+        "adi-sonido",
+        "adi-burbujas"
+      ],
+      "contratoFirmado": true,
+      "firmaCliente": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAA8CAYAAACG...",
+      "valorTotal": 740000,
+      "pagos": [
+        {
+          "fecha": "2026-08-14",
+          "valor": 370000,
+          "tipo": "Abono inicial de reserva (50%)"
+        }
+      ],
+      "saldoPendiente": 370000,
+      "citas": [
+        {
+          "id": "cit-1",
+          "titulo": "Visita técnica de espacio para el inflable",
+          "fecha": "2026-08-25",
+          "hora": "16:00",
+          "descripcion": "Validación de conexiones eléctricas y espacio del jardín."
+        }
+      ],
+      "cronograma": [
+        {
+          "hora": "13:00",
+          "actividad": "Llegada del camión de logística y descarga del Castillo Inflable",
+          "estado": "realizado"
+        },
+        {
+          "hora": "13:30",
+          "actividad": "Montaje del Castillo Inflable y conexión de la cabina de sonido",
+          "estado": "realizado"
+        },
+        {
+          "hora": "14:00",
+          "actividad": "Inicio del evento, recepción de los niños y apertura del inflable",
+          "estado": "realizado"
+        },
+        {
+          "hora": "14:30",
+          "actividad": "Pintacaritas e inicio de la Recreación Dirigida",
+          "estado": "realizado"
+        },
+        {
+          "hora": "15:30",
+          "actividad": "Servicio de Algodón de Azúcar y Perros Calientes en los carritos",
+          "estado": "realizado"
+        },
+        {
+          "hora": "16:30",
+          "actividad": "Bailes dirigidos, piñata y cantada de cumpleaños",
+          "estado": "realizado"
+        },
+        {
+          "hora": "17:00",
+          "actividad": "Desmontaje y fin de los servicios de recreación",
+          "estado": "realizado"
+        }
+      ],
+      "recreadoresAsignados": [
+        "user-recreador"
+      ],
+      "logisticaAsignados": [
+        "user-logistica"
+      ],
+      "enlaceFotos": "https://drive.google.com/drive/folders/demo-recreacion",
+      "seleccionFotos": "",
+      "fechaPublicacionFotos": "2026-08-31"
+    },
+    {
+      "nombre": "Recreación de Liliana Restrepo",
+      "clienteId": "user-cliente",
+      "fecha": "2026-08-30",
+      "horaInicio": "14:00",
+      "direccion": "A convenir con el cliente",
+      "invitados": 60,
+      "inflables": [
+        "inf-castillo"
+      ],
+      "alimentos": [
+        {
+          "id": "ali-hotdogs",
+          "qty": 60
+        },
+        {
+          "id": "ali-algodon",
+          "qty": 50
+        }
+      ],
+      "shows": [
+        "sho-basico"
+      ],
+      "corporativos": [],
+      "adicionales": [
+        "adi-sonido",
+        "adi-burbujas"
+      ],
+      "valorTotal": 770000,
+      "contratoFirmado": false,
+      "id": "evt-1786660943625",
+      "firmaCliente": "",
+      "pagos": [],
+      "citas": [],
+      "recreadoresAsignados": [],
+      "logisticaAsignados": [],
+      "enlaceFotos": "",
+      "seleccionFotos": "",
+      "fechaPublicacionFotos": "",
+      "cronograma": [
+        {
+          "hora": "01:00",
+          "actividad": "Montaje y alistamiento de equipos",
+          "estado": "pendiente"
+        },
+        {
+          "hora": "00:00",
+          "actividad": "Inicio de actividades y bienvenida",
+          "estado": "pendiente"
+        },
+        {
+          "hora": "01:00",
+          "actividad": "Juegos dirigidos e inflables activos",
+          "estado": "pendiente"
+        },
+        {
+          "hora": "02:00",
+          "actividad": "Servicio de snacks (algodón, crispetas)",
+          "estado": "pendiente"
+        },
+        {
+          "hora": "02:30",
+          "actividad": "Show principal (magia o títeres)",
+          "estado": "pendiente"
+        },
+        {
+          "hora": "03:00",
+          "actividad": "Cierre, piñata y pastel",
+          "estado": "pendiente"
+        }
+      ]
+    }
+  ],
+  "inventory": [
+    {
+      "id": "inv-cast-mult",
+      "name": "Castillo Inflable Multicolor (3x3)",
+      "cantidad": 1,
+      "unidad": "unidad",
+      "categoria": "recreacion",
+      "minimo": 1,
+      "proveedor": "Inflables de Antioquia",
+      "estado": "limpio"
+    },
+    {
+      "id": "inv-tob-pisc",
+      "name": "Tobogán Gigante con Piscina",
+      "cantidad": 1,
+      "unidad": "unidad",
+      "categoria": "recreacion",
+      "minimo": 1,
+      "proveedor": "Inflables de Antioquia",
+      "estado": "limpio"
+    },
+    {
+      "id": "inv-salchicha",
+      "name": "Salchichas Zenú (Paquete x 20)",
+      "cantidad": 15,
+      "unidad": "paquetes",
+      "categoria": "alimentos",
+      "minimo": 5,
+      "proveedor": "Distribuidora El Éxito"
+    },
+    {
+      "id": "inv-pan-perro",
+      "name": "Pan Bimbo para Perro (Paquete x 6)",
+      "cantidad": 50,
+      "unidad": "paquetes",
+      "categoria": "alimentos",
+      "minimo": 10,
+      "proveedor": "Panificadora local"
+    },
+    {
+      "id": "inv-azucar",
+      "name": "Azúcar saborizada Rosada (Bolsa x 1kg)",
+      "cantidad": 12,
+      "unidad": "kg",
+      "categoria": "alimentos",
+      "minimo": 3,
+      "proveedor": "Distribuidora de Azúcares"
+    },
+    {
+      "id": "inv-globos",
+      "name": "Globos Sempertex R-270 (Bolsa x 50)",
+      "cantidad": 8,
+      "unidad": "bolsas",
+      "categoria": "decoracion",
+      "minimo": 2,
+      "proveedor": "Sempertex S.A."
+    }
+  ],
+  "recipes": [
+    {
+      "id": "rec-perros",
+      "name": "Montaje de Perros Calientes",
+      "categoria": "arroz",
+      "baseInvitados": 50,
+      "ingredientes": [
+        {
+          "nombre": "Panes de Perro",
+          "cantidad": 52,
+          "unidad": "unidades"
+        },
+        {
+          "nombre": "Salchichas",
+          "cantidad": 52,
+          "unidad": "unidades"
+        },
+        {
+          "nombre": "Salsa de Tomate",
+          "cantidad": 1.5,
+          "unidad": "litros"
+        },
+        {
+          "nombre": "Mayonesa",
+          "cantidad": 1.5,
+          "unidad": "litros"
+        },
+        {
+          "nombre": "Papita Cabello de Ángel",
+          "cantidad": 1.5,
+          "unidad": "kg"
+        },
+        {
+          "nombre": "Servilletas",
+          "cantidad": 100,
+          "unidad": "unidades"
+        }
+      ],
+      "procedimiento": "1. Mantener las salchichas en agua caliente en el compartimento térmico del carrito a una temperatura mínima de 75°C por higiene.\n2. Abrir los panes de perro con cuchillo de sierra y colocarlos brevemente en el vaporizador del carrito para suavizarlos.\n3. Colocar la salchicha caliente dentro del pan.\n4. Añadir una línea generosa de papita picada cabello de ángel.\n5. Aplicar las salsas en forma de zigzag (tomate, mayonesa y mostaza al gusto del cliente).\n6. Servir envuelto en servilleta de papel absorbente."
+    },
+    {
+      "id": "rec-algodon",
+      "name": "Preparación de Algodón de Azúcar",
+      "categoria": "liquido",
+      "baseInvitados": 50,
+      "ingredientes": [
+        {
+          "nombre": "Azúcar Saborizada y Colorada",
+          "cantidad": 1.5,
+          "unidad": "kg"
+        },
+        {
+          "nombre": "Palos de Madera Largos",
+          "cantidad": 55,
+          "unidad": "unidades"
+        }
+      ],
+      "procedimiento": "1. Precalentar la máquina de algodón de azúcar durante 2-3 minutos hasta que el cabezal esté caliente.\n2. Detener la máquina brevemente y verter una medida (cuchara dosificadora) de azúcar saborizada rosa o azul en el centro.\n3. Encender la máquina y esperar a que empiece a salir la telaraña de azúcar.\n4. Tomar un palo de madera y rotarlo rápidamente en círculo alrededor del cabezal para recolectar el hilo de azúcar en forma uniforme.\n5. Seguir girando hasta formar una nube redonda y compacta de unos 25cm de diámetro.\n6. Entregar de inmediato para evitar que el aire húmedo lo compacte."
+    }
+  ],
+  "providers": [
+    {
+      "id": "prov-1",
+      "nombre": "Inflables de Antioquia",
+      "telefono": "3148765432",
+      "email": "ventas@inflablesantioquia.com",
+      "direccion": "Carrera 50 # 30-20, Medellín",
+      "descripcion": "Proveedor principal de reparación de inflables y repuestos de motores sopladores."
+    },
+    {
+      "id": "prov-2",
+      "nombre": "Distribuidora El Éxito",
+      "telefono": "3104561234",
+      "email": "pedidos@distriexito.com",
+      "direccion": "Calle 10 # 45-67, Medellín",
+      "descripcion": "Insumos para perros calientes (salchichas, salsas, vasos, servilletas)."
+    }
+  ],
+  "notifications": [
+    {
+      "id": "not-1",
+      "text": "Nueva cotización solicitada por Liliana Restrepo para el 30 de Agosto",
+      "read": false,
+      "date": "2026-08-13T16:00:00.000Z"
+    },
+    {
+      "id": "not-2",
+      "text": "Alerta de inventario: Salchichas Zenú por debajo del mínimo requerido",
+      "read": false,
+      "date": "2026-08-13T16:05:00.000Z"
+    }
+  ],
+  "backups": []
+}

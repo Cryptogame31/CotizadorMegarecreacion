@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    // Captura global de errores para diagnóstico en pantalla
+    window.onerror = function(message, source, lineno, colno, error) {
+      const errDiv = document.createElement('div');
+      errDiv.style = "position:fixed; top:0; left:0; width:100%; background:#ef4444; color:white; padding:1.5rem; z-index:999999; font-family:monospace; font-size:0.9rem; border-bottom:3px solid #b91c1c; box-shadow:0 4px 6px rgba(0,0,0,0.3);";
+      errDiv.innerHTML = `
+        <h3 style="margin:0 0 0.5rem 0; font-size:1.1rem; font-weight:bold;">🚨 Error Crítico detectado:</h3>
+        <p style="margin:0 0 0.25rem 0;"><strong>Mensaje:</strong> ${message}</p>
+        <p style="margin:0 0 0.25rem 0;"><strong>Archivo:</strong> ${source} (Línea ${lineno}:${colno})</p>
+        <button onclick="this.parentNode.remove()" style="margin-top:0.75rem; background:white; color:#ef4444; border:none; padding:0.4rem 1rem; border-radius:4px; font-weight:bold; cursor:pointer;">Cerrar Aviso</button>
+      `;
+      // Asegurarse de que el body está cargado o agregarlo
+      if (document.body) {
+        document.body.appendChild(errDiv);
+      } else {
+        window.addEventListener('DOMContentLoaded', () => document.body.appendChild(errDiv));
+      }
+      return false;
+    };
+    window.onunhandledrejection = function(event) {
+      const errDiv = document.createElement('div');
+      errDiv.style = "position:fixed; top:0; left:0; width:100%; background:#f59e0b; color:white; padding:1.5rem; z-index:999999; font-family:monospace; font-size:0.9rem; border-bottom:3px solid #d97706; box-shadow:0 4px 6px rgba(0,0,0,0.3);";
+      errDiv.innerHTML = `
+        <h3 style="margin:0 0 0.5rem 0; font-size:1.1rem; font-weight:bold;">⚠️ Promesa Rechazada no controlada:</h3>
+        <p style="margin:0;"><strong>Detalle:</strong> ${event.reason}</p>
+        <button onclick="this.parentNode.remove()" style="margin-top:0.75rem; background:white; color:#d97706; border:none; padding:0.4rem 1rem; border-radius:4px; font-weight:bold; cursor:pointer;">Cerrar Aviso</button>
+      `;
+      if (document.body) {
+        document.body.appendChild(errDiv);
+      } else {
+        window.addEventListener('DOMContentLoaded', () => document.body.appendChild(errDiv));
+      }
+    };
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Megarecreación - Sistema de Gestión e Inflables</title>
+  <meta name="description" content="Plataforma de gestión integral y cotizaciones para Megarecreación. Inflables, shows, snacks y pausas activas.">
+  
+  <script>
+    // Limpieza de caché antigua en actualizaciones
+    const APP_VERSION = '2026_v2';
+    if (window.location.protocol !== 'file:') {
+      try {
+        if (localStorage.getItem('mr_app_version') !== APP_VERSION) {
+          localStorage.setItem('mr_app_version', APP_VERSION);
+          
+          const clearCaches = 'caches' in window ? 
+            caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))) : 
+            Promise.resolve();
+
+          const clearSW = 'serviceWorker' in navigator ? 
+            navigator.serviceWorker.getRegistrations().then(regs => Promise.all(regs.map(r => r.unregister()))) : 
+            Promise.resolve();
+
+          Promise.all([clearCaches, clearSW]).then(() => {
+            window.location.reload(true);
+          }).catch(err => console.warn("Error cleaning SW", err));
+        }
+      } catch (e) {
+        console.warn("Storage access blocked or not supported", e);
+      }
+    }
+  </script>
+
+  <!-- PWA & Mobile Web App settings -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#10b981">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Megarecreación">
+  
+  <link rel="stylesheet" href="css/styles.css?v=2026_v1">
+</head>
+<body>
+  
+  <!-- MOBILE TOP BAR (App Bar) -->
+  <header class="mobile-header" id="main-mobile-header">
+    <div class="mobile-logo-group">
+      <div id="brand-mobile-logo-wrapper" style="display: flex; align-items: center; justify-content: center;">
+        <!-- Logo SVG por defecto o imagen cargada -->
+      </div>
+      <span class="mobile-logo-text" id="brand-mobile-title">MEGARECREACIÓN</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <button id="theme-toggle-mobile-btn" style="background: none; border: none; color: var(--text-primary); cursor: pointer; padding: 0.5rem; display: flex; align-items: center; justify-content: center;" title="Cambiar Tema">
+        <span class="theme-icon-light" style="display: none;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </span>
+        <span class="theme-icon-dark">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </span>
+      </button>
+      <div class="mobile-user-actions" id="mobile-user-actions-btn" style="display: none;">
+        <div class="mobile-user-badge" id="mobile-user-badge-initials">U</div>
+      </div>
+    </div>
+  </header>
+
+  <div id="app-container">
+    
+    <!-- SIDEBAR (Escritorio) -->
+    <aside class="sidebar" id="main-sidebar">
+      <div class="logo-container">
+        <div id="brand-logo-wrapper" style="display: flex; align-items: center; justify-content: center; min-height: 60px; margin-bottom: 0.5rem;">
+          <!-- Logo inyectado -->
+        </div>
+        <h1 class="logo-title" id="brand-sidebar-title">MEGARECREACIÓN</h1>
+        <span class="logo-subtitle" id="brand-sidebar-subtitle">Atracciones y Shows</span>
+      </div>
+      
+      <nav>
+        <ul class="nav-links" id="sidebar-nav-links">
+          <!-- Links de navegaciónSPA -->
+        </ul>
+      </nav>
+      
+      <!-- Selector de Tema Noche/Día -->
+      <div class="theme-toggle-container" style="padding: 0 1.5rem; margin-bottom: 1rem; margin-top: 1.5rem;">
+        <button id="theme-toggle-btn" class="btn-secondary" title="Cambiar Tema" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.6rem;">
+          <span class="theme-icon-light" style="display: none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </span>
+          <span class="theme-icon-dark">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </span>
+          <span class="theme-toggle-text">Modo Noche</span>
+        </button>
+      </div>
+
+      <!-- Panel de Perfil de Usuario -->
+      <div class="user-profile-panel" id="sidebar-user-panel" style="display: none;">
+        <div class="user-profile-info" style="justify-content: space-between; width: 100%;">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div class="user-avatar" id="user-avatar-initials">U</div>
+            <div class="user-details">
+              <span class="user-name" id="user-display-name">Usuario</span>
+              <span class="user-role" id="user-display-role">Rol</span>
+            </div>
+          </div>
+          <!-- Campana de Notificaciones -->
+          <div class="btn-notification-bell" id="btn-notification-bell" title="Notificaciones" style="display: none; cursor: pointer; position: relative;">
+            <span style="font-size: 1.2rem;">🔔</span>
+            <span class="notification-badge" id="notification-badge" style="display: none; position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; border-radius: 50%; font-size: 0.65rem; padding: 2px 6px; font-weight: bold;">0</span>
+          </div>
+        </div>
+        <button class="btn-logout" id="btn-logout-sidebar" style="font-size: 0.8rem; border-radius: 8px;">Cerrar Sesión</button>
+      </div>
+    </aside>
+
+    <!-- MOBILE NAVIGATION BOTTOM BAR -->
+    <nav class="mobile-nav" id="main-mobile-nav">
+      <!-- Enlaces móviles dinámicos -->
+    </nav>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content" id="main-content-area">
+      
+      <!-- ========================================== -->
+      <!-- VISTA: COTIZADOR (PÚBLICO) -->
+      <!-- ========================================== -->
+      <section id="view-cotizar" class="view-section active">
+        <div class="page-header">
+          <div>
+            <h2 class="page-title">Cotizador de <span>Servicios</span></h2>
+            <p class="page-subtitle">Arma tu paquete de inflables, snacks y recreación al instante.</p>
+          </div>
+          <div>
+            <button class="btn-primary" id="btn-nav-login">
+              Soy Cliente / Empleado 🔑
+            </button>
+          </div>
+        </div>
+
+        <!-- HERO BANNER SPECTACULAR -->
+        <div class="hero-banner-spectacular" style="background: linear-gradient(180deg, rgba(5,6,9,0.2) 0%, rgba(5,6,9,0.85) 100%), url('/assets/hero_bg.jpg') center/cover no-repeat; border-radius: var(--border-radius); height: 260px; margin-bottom: 2rem; display: flex; flex-direction: column; justify-content: center; padding: 2rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-premium), var(--shadow-glow);">
+          <h2 style="font-family: var(--font-title); font-size: 2.2rem; font-weight: 800; color: #fff; text-shadow: 0 4px 15px rgba(0,0,0,0.6); margin-bottom: 0.5rem;">¡Bienvenido al Portal de Diversión!</h2>
+          <p style="color: #e2e8f0; text-shadow: 0 2px 8px rgba(0,0,0,0.6); max-width: 600px; font-weight: 500; font-size: 1.05rem;">Alquila los mejores inflables, contrata carros de comida y disfruta de shows espectaculares para tu fiesta o evento.</p>
+        </div>
+
+        <div class="grid-2-1">
+          <!-- Formulario Cotizador -->
+          <div class="card" style="padding-top: 1.5rem;">
+            <form id="form-cotizador">
+              
+              <!-- 1. Contacto -->
+              <h3 style="color: var(--accent-gold); font-family: var(--font-title); font-size: 1.3rem; margin-bottom: 1.25rem;">1. Información de Contacto</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="cot-nombre">Nombre Completo</label>
+                  <input type="text" id="cot-nombre" placeholder="Ej: Diana Restrepo" required>
+                </div>
+                <div class="form-group">
+                  <label for="cot-email">Correo Electrónico</label>
+                  <input type="email" id="cot-email" placeholder="correo@ejemplo.com" required>
+                </div>
+                <div class="form-group">
+                  <label for="cot-telefono">Teléfono / WhatsApp</label>
+                  <input type="text" id="cot-telefono" placeholder="Ej: 3163048505" required>
+                </div>
+              </div>
+
+              <!-- 2. Detalles -->
+              <h3 style="color: var(--accent-gold); font-family: var(--font-title); font-size: 1.3rem; margin: 2rem 0 1.25rem 0;">2. Detalles de la Fiesta</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="cot-tipo">Tipo de Evento</label>
+                  <select id="cot-tipo" required>
+                    <option value="fiesta_infantil">Fiesta Infantil (Cumpleaños)</option>
+                    <option value="empresarial">Evento Empresarial / Integración</option>
+                    <option value="pausas_activas">Pausas Activas Laborales</option>
+                    <option value="colegio">Día del Colegio / Escolar</option>
+                    <option value="otros">Otros Eventos Sociales</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="cot-fecha">Fecha del Evento</label>
+                  <input type="date" id="cot-fecha" required>
+                </div>
+                <div class="form-group">
+                  <label for="cot-invitados">Cantidad de Participantes (Niños/Adultos)</label>
+                  <input type="number" id="cot-invitados" min="10" max="500" value="50" required>
+                </div>
+              </div>
+
+              <!-- Buscador de Servicios -->
+              <div class="card-search-box" style="margin: 2rem 0 1rem 0; padding: 0.85rem 1.25rem; background: var(--bg-tertiary); border-radius: 12px; border: 1px solid var(--glass-border); display: flex; gap: 0.75rem; align-items: center; box-shadow: var(--shadow-premium);">
+                <div style="font-size: 1.1rem; color: var(--accent-gold);">🔍</div>
+                <input type="text" id="cot-search-services" placeholder="Buscar atracciones, inflables, snacks o shows..." style="width: 100%; border: none; background: transparent; color: #fff; font-family: inherit; font-size: 0.95rem; outline: none;">
+              </div>
+
+              <!-- 3. Inflables -->
+              <h3 style="color: var(--accent-gold); font-family: var(--font-title); font-size: 1.3rem; margin: 2rem 0 0.5rem 0;">3. Alquiler de Inflables</h3>
+              <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:1rem;">Selecciona los inflables que deseas alquilar. Todos incluyen montaje y operario.</p>
+              <div class="products-selector-grid" id="cot-inflables-grid">
+                <!-- Inyectado por JS -->
+              </div>
+
+              <!-- 4. Snacks y Comida -->
+              <h3 style="color: var(--accent-gold); font-family: var(--font-title); font-size: 1.3rem; margin: 2.5rem 0 0.5rem 0;">4. Carros de Alimentos y Snacks</h3>
+              <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:1rem;">Carritos clásicos de feria con porciones ilimitadas. Haz clic para seleccionar y ajustar porciones.</p>
+              <div class="products-selector-grid" id="cot-alimentos-grid">
+                <!-- Inyectado por JS -->
+              </div>
+
+              <!-- 5. Animación y Shows -->
+              <h3 style="color: var(--accent-gold); font-family: var(--font-title); font-size: 1.3rem; margin: 2.5rem 0 0.5rem 0;">5. Recreación, Animación y Shows</h3>
+              <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:1rem;">Animadores profesionales, shows temáticos y dinámicas cooperativas.</p>
+              <div class="products-selector-grid" id="cot-shows-grid">
+                <!-- Inyectado por JS -->
+              </div>
+
+              <!-- 6. Corporativos -->
+              <h3 style="color: var(--accent-gold); font-family: var(--font-title); font-size: 1.3rem; margin: 2.5rem 0 0.5rem 0;">6. Pausas Activas y Dinámicas de Empresa</h3>
+              <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:1rem;">Planes lúdicos y ergonómicos de integración y salud laboral.</p>
+              <div class="products-selector-grid" id="cot-corp-grid">
+                <!-- Inyectado por JS -->
+              </div>
+
+              <!-- 7. Sonido y Adicionales -->
+              <h3 style="color: var(--accent-gold); font-family: var(--font-title); font-size: 1.3rem; margin: 2.5rem 0 0.5rem 0;">7. Sonido y Equipos Adicionales</h3>
+              <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:1rem;">Completa tu fiesta con sonido y máquinas especiales.</p>
+              <div class="products-selector-grid" id="cot-adicionales-grid">
+                <!-- Inyectado por JS -->
+              </div>
+
+              <!-- Categorías Adicionales Dinámicas -->
+              <div id="cot-dynamic-categories-container"></div>
+
+              <div style="margin-top: 2.5rem; text-align: right;">
+                <button type="submit" class="btn-primary" id="btn-submit-cotizacion">
+                  Solicitar Cotización Oficial
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Resumen Cotizador lateral -->
+          <div class="cotizacion-summary-panel">
+            <h3 class="summary-header">Presupuesto Estimado</h3>
+            <div id="cot-summary-breakdown">
+              <!-- Resumen dinámico -->
+            </div>
+            <button class="btn-accent" id="btn-descargar-cotizacion" style="width: 100%; margin-top: 1.5rem;">
+              📥 Descargar en PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Consulta de Disponibilidad de Atracciones -->
+        <div class="card" style="margin-top: 2.5rem;">
+          <h3 style="color: var(--accent-gold); font-family: var(--font-title); font-size: 1.5rem; margin-bottom: 0.5rem;">🔍 Consultar Disponibilidad de Equipos</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem;">Consulta de inmediato qué inflables o atracciones están ocupados en la fecha de tu evento.</p>
+          
+          <div class="form-grid" style="align-items: flex-end; max-width: 600px; margin-bottom: 1.5rem;">
+            <div class="form-group">
+              <label for="check-avail-date">Selecciona la Fecha</label>
+              <input type="date" id="check-avail-date" required>
+            </div>
+            <div>
+              <button type="button" class="btn-primary" id="btn-check-availability" style="height: 48px; width: 100%;">Consultar Fecha</button>
+            </div>
+          </div>
+          <div id="availability-results" style="display: none; margin-top: 1.5rem;"></div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VISTA: LOGIN (AUTENTICACIÓN) -->
+      <!-- ========================================== -->
+      <section id="view-login" class="view-section">
+        <div style="max-width: 480px; margin: 4rem auto 0 auto;">
+          <div class="card">
+            <h2 style="font-family: var(--font-title); color: var(--accent-gold); text-align: center; margin-bottom: 2rem; font-size: 1.8rem;">Iniciar Sesión</h2>
+            <form id="form-login">
+              <div class="form-group" style="margin-bottom: 1.2rem;">
+                <label for="login-email">Correo Electrónico</label>
+                <input type="email" id="login-email" placeholder="correo@ejemplo.com" required>
+              </div>
+              <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="login-password">Contraseña</label>
+                <input type="password" id="login-password" placeholder="••••••••" required>
+              </div>
+              <button type="submit" class="btn-primary" style="width: 100%;">Ingresar a Intranet</button>
+            </form>
+            
+            <div class="demo-credentials" id="demo-auth-selector" style="display: none; margin-top:1.5rem; padding-top:1.5rem; border-top:1px dashed var(--border-color);">
+              <h4 style="font-size: 0.85rem; color: var(--accent-gold); margin-bottom: 0.5rem;">Acceso Rápido Demo</h4>
+              <p style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.8rem;">Selecciona una cuenta de prueba (Clave: <strong>123456</strong>):</p>
+              <select id="select-demo-user" style="padding: 0.5rem;">
+                <option value="">-- Seleccionar Usuario --</option>
+                <option value="admin@megarecreacion.com">Superadministrador (Control total)</option>
+                <option value="cliente@megarecreacion.com">Portal de Clientes (Familia Restrepo)</option>
+                <option value="recreador@megarecreacion.com">Recreador (Sebastián Pérez)</option>
+                <option value="logistica@megarecreacion.com">Logística (Carlos Ruíz)</option>
+                <option value="compras@megarecreacion.com">Abastecimiento (Adriana Torres)</option>
+              </select>
+            </div>
+            
+            <button class="btn-secondary" id="btn-back-cotizar" style="width: 100%; margin-top: 1rem;">Volver al Cotizador</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VISTA: SOY CLIENTE (PRIVADO) -->
+      <!-- ========================================== -->
+      <section id="view-cliente" class="view-section">
+        <div class="page-header">
+          <div>
+            <h2 class="page-title">Mi <span>Reserva</span></h2>
+            <p class="page-subtitle" id="client-event-name">Información de tu evento recreativo contratado.</p>
+          </div>
+        </div>
+
+        <!-- COUNTDOWN TIMER BANNER -->
+        <div id="client-countdown-banner" class="card" style="display: none; margin-bottom: 2rem; background: linear-gradient(135deg, var(--accent-gold-glow) 0%, rgba(11,13,22,0.4) 100%); border: 1px solid var(--accent-gold); align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding: 1.25rem 2rem;">
+          <div style="display: flex; align-items: center; gap: 1.25rem;">
+            <span style="font-size: 2.2rem;">⏳</span>
+            <div>
+              <h4 style="margin: 0; font-family: var(--font-title); color: var(--accent-gold); font-size: 1.15rem;">Cuenta Regresiva para la Diversión</h4>
+              <p style="margin: 0; font-size: 0.8rem; color: var(--text-secondary);" id="client-countdown-event-date">Cargando...</p>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.75rem;" id="countdown-timer-container">
+            <div style="text-align: center; min-width: 60px; background: var(--bg-primary); border: 1px solid var(--glass-border); padding: 0.5rem; border-radius: 8px;">
+              <span id="timer-days" style="font-size: 1.4rem; font-weight: 700; color: var(--accent-gold); display: block;">00</span>
+              <span style="font-size: 0.65rem; color: var(--text-secondary); display: block;">Días</span>
+            </div>
+            <div style="text-align: center; min-width: 60px; background: var(--bg-primary); border: 1px solid var(--glass-border); padding: 0.5rem; border-radius: 8px;">
+              <span id="timer-hours" style="font-size: 1.4rem; font-weight: 700; color: var(--accent-gold); display: block;">00</span>
+              <span style="font-size: 0.65rem; color: var(--text-secondary); display: block;">Horas</span>
+            </div>
+            <div style="text-align: center; min-width: 60px; background: var(--bg-primary); border: 1px solid var(--glass-border); padding: 0.5rem; border-radius: 8px;">
+              <span id="timer-minutes" style="font-size: 1.4rem; font-weight: 700; color: var(--accent-gold); display: block;">00</span>
+              <span style="font-size: 0.65rem; color: var(--text-secondary); display: block;">Minutos</span>
+            </div>
+            <div style="text-align: center; min-width: 60px; background: var(--bg-primary); border: 1px solid var(--glass-border); padding: 0.5rem; border-radius: 8px;">
+              <span id="timer-seconds" style="font-size: 1.4rem; font-weight: 700; color: var(--accent-gold); display: block;">00</span>
+              <span style="font-size: 0.65rem; color: var(--text-secondary); display: block;">Segundos</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-container">
+          <button class="tab-btn active" data-tab="client-info">Mi Reserva</button>
+          <button class="tab-btn" data-tab="client-guests">Participantes</button>
+          <button class="tab-btn" data-tab="client-menu">Carros de Comida</button>
+          <button class="tab-btn" data-tab="client-cronograma">Cronograma</button>
+          <button class="tab-btn" data-tab="client-docs">Contrato y Pagos</button>
+          <button class="tab-btn" data-tab="client-photography">Fotos 📸</button>
+        </div>
+
+        <!-- TAB: INFO -->
+        <div id="client-info" class="tab-content active">
+          <div class="dashboard-grid">
+            <div class="metric-card">
+              <div class="metric-info">
+                <span class="metric-label">Fecha</span>
+                <span class="metric-value" id="c-info-fecha">-</span>
+              </div>
+              <div class="metric-icon">📅</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-info">
+                <span class="metric-label">Hora de Inicio</span>
+                <span class="metric-value" id="c-info-hora">-</span>
+              </div>
+              <div class="metric-icon">⏰</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-info">
+                <span class="metric-label">Inflables contratados</span>
+                <span class="metric-value" id="c-info-salon">-</span>
+              </div>
+              <div class="metric-icon">🏰</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1.5rem; font-size: 1.4rem;">Servicios Generales Contratados</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+              <div>
+                <strong style="color: var(--text-secondary);">Shows y Recreación:</strong>
+                <p id="c-info-recreacion" style="font-size: 1.1rem; font-weight: 600; margin-top: 0.25rem;">-</p>
+              </div>
+              <div>
+                <strong style="color: var(--text-secondary);">Sonido y Equipos:</strong>
+                <p id="c-info-fotografia" style="font-size: 1.1rem; font-weight: 600; margin-top: 0.25rem;">-</p>
+              </div>
+              <div>
+                <strong style="color: var(--text-secondary);">Estado del Contrato:</strong>
+                <p id="c-info-firma-status" style="margin-top: 0.5rem;"><span class="badge badge-pendiente">Pendiente</span></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Visitas programadas de logística -->
+          <div class="card" id="client-citas-card" style="margin-top: 1.5rem; display: none;">
+            <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1.2rem; font-size: 1.4rem;">📅 Visitas Técnicas o Citas Coordinadas</h3>
+            <div id="client-citas-lista-container" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+          </div>
+        </div>
+
+        <!-- TAB: INVITADOS / PARTICIPANTES -->
+        <div id="client-guests" class="tab-content">
+          <div class="guest-counter-widget" style="display:flex; gap:2rem; margin-bottom:1.5rem; background:var(--bg-tertiary); padding:1.25rem; border-radius:12px;">
+            <div>
+              <span style="font-size:1.5rem; font-weight:bold; color:var(--accent-gold);" id="cg-total">0</span><br><span style="font-size:0.75rem; color:var(--text-secondary);">Participantes Totales</span>
+            </div>
+            <div>
+              <span style="font-size:1.5rem; font-weight:bold; color:var(--success);" id="cg-confirmados">0</span><br><span style="font-size:0.75rem; color:var(--text-secondary);">Confirmados</span>
+            </div>
+            <div>
+              <span style="font-size:1.5rem; font-weight:bold; color:var(--warning);" id="cg-pendientes">0</span><br><span style="font-size:0.75rem; color:var(--text-secondary);">Pendientes</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="flex-between" style="margin-bottom: 1.5rem; align-items:center;">
+              <h3 style="font-family: var(--font-title); color: var(--accent-gold); font-size: 1.3rem;">Lista de Asistentes</h3>
+              <button class="btn-primary" id="btn-agregar-invitado" style="padding:0.5rem 1.2rem; font-size:0.85rem;">+ Agregar Participante</button>
+            </div>
+
+            <!-- Form Agregar Invitado -->
+            <div id="form-invitado-container" style="display: none; margin-bottom: 1.5rem; padding: 1.25rem; background: var(--bg-tertiary); border-radius: 8px;">
+              <div class="form-grid">
+                <input type="hidden" id="guest-index">
+                <div class="form-group">
+                  <label for="guest-name">Nombre del Participante</label>
+                  <input type="text" id="guest-name" placeholder="Ej: Mateo Restrepo (Niño - 6 años)">
+                </div>
+                <div class="form-group" style="justify-content: center; align-items:flex-start;">
+                  <label class="checkbox-label" style="margin-top: 1.5rem;">
+                    <input type="checkbox" id="guest-confirmed"> Asistencia Confirmada
+                  </label>
+                </div>
+              </div>
+              <div style="display:flex; justify-content: flex-end; gap:0.5rem; margin-top:1rem;">
+                <button class="btn-secondary" id="btn-cancelar-invitado" style="padding:0.4rem 1rem; font-size:0.8rem;">Cancelar</button>
+                <button class="btn-primary" id="btn-guardar-invitado" style="padding:0.4rem 1rem; font-size:0.8rem;">Guardar</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nombre / Detalles</th>
+                    <th>Confirmación</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="client-guests-list"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: MENÚ DE CARROS -->
+        <div id="client-menu" class="tab-content">
+          <div class="card">
+            <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1rem; font-size: 1.4rem;">Especificaciones de Snacks y Sabores</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size:0.9rem;">Registra las salsas, ingredientes o colores especiales que requieres para los carritos de comida contratados.</p>
+            <form id="form-menu-seleccion">
+              <div class="form-grid" id="client-menu-fields-grid"></div>
+              <div style="text-align: right; margin-top: 1.5rem;">
+                <button type="submit" class="btn-primary" id="btn-save-menu">Guardar Selección</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- TAB: CRONOGRAMA -->
+        <div id="client-cronograma" class="tab-content">
+          <div class="card">
+            <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1rem; font-size: 1.4rem;">Cronograma del Día del Evento</h3>
+            <p style="color: var(--text-secondary); font-size:0.9rem;">Consulta la programación de montaje de inflables, inicio de show de animación y entrega de snacks.</p>
+            <div class="timeline-list" id="client-timeline-list"></div>
+          </div>
+        </div>
+
+        <!-- TAB: CONTRATO Y PAGOS -->
+        <div id="client-docs" class="tab-content">
+          <div class="dashboard-grid">
+            <div class="metric-card" style="border: 1px solid rgba(16,185,129,0.3)">
+              <div class="metric-info">
+                <span class="metric-label">Valor Total Servicio</span>
+                <span class="metric-value" id="cd-total-value">$0 COP</span>
+              </div>
+              <div class="metric-icon">💰</div>
+            </div>
+            <div class="metric-card" style="border: 1px solid rgba(16,185,129,0.3)">
+              <div class="metric-info">
+                <span class="metric-label">Abonos Reportados</span>
+                <span class="metric-value" style="color: var(--success);" id="cd-abonos">$0 COP</span>
+              </div>
+              <div class="metric-icon">💵</div>
+            </div>
+            <div class="metric-card" style="border: 1px solid rgba(239,68,68,0.3)">
+              <div class="metric-info">
+                <span class="metric-label">Saldo Pendiente (Día del Evento)</span>
+                <span class="metric-value" style="color: var(--danger);" id="cd-saldo">$0 COP</span>
+              </div>
+              <div class="metric-icon">⏳</div>
+            </div>
+          </div>
+
+          <div class="grid-1-1">
+            <!-- Contrato legal -->
+            <div class="card">
+              <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1rem; font-size: 1.3rem;">Firma de Acuerdo de Alquiler</h3>
+              <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Es indispensable firmar digitalmente las políticas de alquiler y cuidado de inflables para el montaje.</p>
+              
+              <div id="contrato-texto-container" style="background: var(--bg-tertiary); padding: 1.25rem; border-radius: 8px; font-size: 0.8rem; height: 180px; overflow-y: auto; border: 1px solid var(--glass-border); margin-bottom: 1.5rem;"></div>
+
+              <div id="firma-digital-seccion">
+                <div id="firma-pendiente-box">
+                  <span class="badge badge-pendiente" style="margin-bottom: 1rem; display:inline-block;">PENDIENTE DE FIRMA</span>
+                  <button class="btn-primary" id="btn-abrir-firma" style="width: 100%;">Firmar Acuerdo Digitalmente</button>
+                </div>
+                <div id="firma-realizada-box" style="display: none; text-align:center;">
+                  <span class="badge badge-confirmada" style="margin-bottom: 1rem; display:inline-block;">CONTRATO FIRMADO DIGITALMENTE</span><br>
+                  <div style="background: white; padding: 10px; display: inline-block; border-radius: 8px; border:1px solid var(--accent-gold);">
+                    <img id="img-signature-saved" src="" alt="Firma del cliente" style="max-height: 80px;">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Historial de Pagos -->
+            <div class="card">
+              <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1.25rem; font-size: 1.3rem;">Abonos de Reserva</h3>
+              <div class="table-responsive">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Valor</th>
+                      <th>Concepto</th>
+                    </tr>
+                  </thead>
+                  <tbody id="client-payments-list"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: FOTOS POST-EVENTO -->
+        <div id="client-photography" class="tab-content">
+          <div class="card">
+            <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1.5rem; font-size: 1.4rem;">📸 Álbum Fotográfico de tu Fiesta</h3>
+            
+            <div id="photo-countdown-container" style="display: none; margin-bottom: 1.5rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 8px; text-align: center;">
+              <h4 style="color: var(--accent-gold); margin-bottom: 0.75rem; font-size: 1rem;">Tus fotos editadas estarán publicadas en:</h4>
+              <div style="display: flex; gap: 0.75rem; justify-content: center; align-items: center;" id="photo-countdown-timer"></div>
+            </div>
+
+            <div id="photo-link-container" style="display: none; text-align: center; padding: 2rem; background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: 12px; margin-bottom: 1.5rem;">
+              <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+              <h4 id="photo-link-header" style="color: var(--accent-gold); font-size: 1.25rem; margin-bottom: 0.75rem;">¡Fotos Listas!</h4>
+              <p id="photo-link-description" style="color: var(--text-secondary); margin-bottom: 1.5rem; max-width: 450px; margin-left: auto; margin-right: auto; font-size:0.9rem;">Ya puedes ver y descargar las fotos de tu evento recreativo agendado desde nuestro enlace de Google Drive.</p>
+              <a href="#" id="btn-client-photo-drive" target="_blank" class="btn-primary" style="text-decoration: none;">
+                Abrir Álbum Digital (Google Drive)
+              </a>
+            </div>
+
+            <div id="photo-selection-container" style="display: none; border-top: 1px solid var(--glass-border); padding-top: 1.5rem; margin-top: 1.5rem;">
+              <h4 style="color: var(--accent-gold); margin-bottom: 0.5rem; font-size: 1.1rem;">Selección o Comentarios para el Fotógrafo</h4>
+              <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.85rem;">Si requieres retoques específicos o quieres reportar qué códigos de fotos te gustaron más para impresión, regístralo aquí.</p>
+              <textarea id="client-photo-selection-text" rows="4" placeholder="Ej: Retoque de luz en fotos #12, #14. Impresión del Spiderman con Tomás..."></textarea>
+              <div style="display:flex; justify-content: flex-end; gap:0.5rem; margin-top: 1rem;">
+                <button type="button" class="btn-primary" id="btn-client-save-photo-selection" style="padding:0.5rem 1.2rem; font-size:0.85rem;">Guardar Selección</button>
+                <button type="button" class="btn-accent" id="btn-client-send-photo-admin-wa" style="padding:0.5rem 1.2rem; font-size:0.85rem; background:#25d366; border-color:#25d366;">Enviar a WhatsApp</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VISTA: ADMINISTRACIÓN (INTRANET) -->
+      <!-- ========================================== -->
+      <section id="view-admin" class="view-section">
+        <div class="page-header">
+          <div>
+            <h2 class="page-title">Panel de <span>Control</span></h2>
+            <p class="page-subtitle">Administra reservas, cotizaciones, personal y configuraciones de Megarecreación.</p>
+          </div>
+        </div>
+
+        <div class="tab-container">
+          <button class="tab-btn active" data-tab="admin-calendar">Calendario</button>
+          <button class="tab-btn" data-tab="admin-quotes">Cotizaciones</button>
+          <button class="tab-btn" data-tab="admin-products">Catálogo de Servicios</button>
+          <button class="tab-btn" data-tab="admin-users">Usuarios</button>
+          <button class="tab-btn" data-tab="admin-settings">Ajustes de Marca</button>
+        </div>
+
+        <!-- TAB: CALENDARIO -->
+        <div id="admin-calendar" class="tab-content active">
+          <div class="card">
+            <div class="flex-between" style="align-items: center; margin-bottom: 1.5rem;">
+              <h3 style="font-family: var(--font-title); color: var(--accent-gold); font-size: 1.4rem;" id="calendar-month-title">Agosto 2026</h3>
+              <div style="display:flex; gap:0.5rem;">
+                <button class="btn-secondary" id="btn-calendar-prev" style="padding: 0.4rem 1rem; font-size:0.85rem;">◀ Anterior</button>
+                <button class="btn-secondary" id="btn-calendar-next" style="padding: 0.4rem 1rem; font-size:0.85rem;">Siguiente ▶</button>
+              </div>
+            </div>
+            
+            <div class="calendar-grid" id="calendar-month-grid">
+              <!-- Rejilla inyectada -->
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: COTIZACIONES -->
+        <div id="admin-quotes" class="tab-content">
+          <div class="card">
+            <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1rem; font-size: 1.4rem;">Cotizaciones Recibidas</h3>
+            
+            <div style="margin-bottom: 1.25rem;">
+              <input type="text" id="admin-quotes-search" placeholder="🔍 Buscar por cliente, correo, ID o fecha..." style="width: 100%; padding: 0.6rem; font-size: 0.9rem; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); color: #fff;">
+            </div>
+
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cliente / Correo</th>
+                    <th>Fecha Fiesta</th>
+                    <th>Presupuesto</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-quotes-list"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: CATALOGO (PRODUCTOS/SERVICIOS) -->
+        <div id="admin-products" class="tab-content">
+          <div class="grid-2-1">
+            <!-- Tabla de Catálogo -->
+            <div class="card">
+              <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1rem; font-size: 1.3rem;">Catálogo Activo de Servicios</h3>
+              
+              <div style="margin-bottom: 1.25rem;">
+                <input type="text" id="admin-products-search" placeholder="🔍 Buscar por servicio, categoría o descripción..." style="width: 100%; padding: 0.6rem; font-size: 0.9rem; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); color: #fff;">
+              </div>
+
+              <div class="table-responsive" style="max-height: 550px; overflow-y: auto;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Categoría</th>
+                      <th>Nombre / Info</th>
+                      <th>Precio Unitario</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-products-list">
+                    <!-- Inyectado por JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Formulario de Crear/Editar -->
+            <div class="card">
+              <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1.25rem; font-size: 1.3rem;" id="admin-product-form-title">Agregar Nuevo Servicio</h3>
+              <form id="form-admin-product">
+                <input type="hidden" id="prod-id" value="">
+                
+                <div class="form-group" style="margin-bottom: 1rem;">
+                  <label for="prod-category">Categoría del Servicio</label>
+                  <select id="prod-category" required>
+                    <!-- Inyectado dinámicamente -->
+                  </select>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 1rem;">
+                  <label for="prod-name">Nombre del Producto / Servicio</label>
+                  <input type="text" id="prod-name" placeholder="Ej: Castillo de Tobogán Seco" required>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                  <label for="prod-price">Precio Base (COP)</label>
+                  <input type="number" id="prod-price" placeholder="Ej: 150000" min="0" required>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                  <label for="prod-desc">Descripción General</label>
+                  <textarea id="prod-desc" rows="3" placeholder="Detalles de dimensiones, capacidad, etc." required style="width: 100%; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 0.75rem; color: #fff; font-family: inherit; font-size: 0.9rem;"></textarea>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                  <label for="prod-link">Enlace de Visualización (Ver más / Instagram)</label>
+                  <input type="url" id="prod-link" placeholder="https://instagram.com/... o https://youtube.com/..." style="width:100%;">
+                </div>
+
+                <!-- Campo dinámico: Capacidad (Inflables) -->
+                <div class="form-group din-prod-field" id="prod-field-capacity" style="margin-bottom: 1rem;">
+                  <label for="prod-capacity">Capacidad de Personas</label>
+                  <input type="text" id="prod-capacity" placeholder="Ej: Hasta 8 niños simultáneamente">
+                </div>
+
+                <!-- Campo dinámico: Duración (Shows / Corporativos) -->
+                <div class="form-group din-prod-field" id="prod-field-duration" style="margin-bottom: 1rem; display: none;">
+                  <label for="prod-duration">Duración del Servicio</label>
+                  <input type="text" id="prod-duration" placeholder="Ej: 3 horas / 45 minutos">
+                </div>
+
+                <!-- Campo dinámico: Cantidad Mínima (Alimentos) -->
+                <div class="form-group din-prod-field" id="prod-field-minqty" style="margin-bottom: 1.5rem; display: none;">
+                  <label for="prod-minqty">Cantidad Mínima de Porciones</label>
+                  <input type="number" id="prod-minqty" placeholder="Ej: 50" min="10" value="50">
+                </div>
+
+                <div style="display:flex; gap:0.5rem;">
+                  <button type="submit" class="btn-primary" style="flex:2;">Guardar Producto</button>
+                  <button type="button" class="btn-secondary" id="btn-cancel-edit-product" style="flex:1;">Cancelar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- DIVISOR DE SECCIÓN -->
+          <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 3rem 0;">
+
+          <!-- CATEGORY CRUD GRID -->
+          <div class="grid-2-1">
+            <!-- Tabla de Categorías -->
+            <div class="card">
+              <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1.5rem; font-size: 1.3rem;">Categorías de Servicios Disponibles</h3>
+              <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID / Slug</th>
+                      <th>Nombre de Categoría</th>
+                      <th>Campo Extra</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-categories-list">
+                    <!-- Inyectado por JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Formulario de Categorías -->
+            <div class="card">
+              <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1.25rem; font-size: 1.3rem;" id="admin-category-form-title">Agregar Nueva Categoría</h3>
+              <form id="form-admin-category">
+                <input type="hidden" id="cat-id" value="">
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                  <label for="cat-name">Nombre de la Categoría</label>
+                  <input type="text" id="cat-name" placeholder="Ej: Decoración de Globos" required>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                  <label for="cat-desc">Descripción General (Público)</label>
+                  <textarea id="cat-desc" rows="2" placeholder="Ej: Globos y temáticas decorativas para tu fiesta..." required style="width: 100%; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 0.75rem; color: #fff; font-family: inherit; font-size: 0.9rem;"></textarea>
+                </div>
+
+                <div class="form-grid" style="margin-bottom: 1.5rem;">
+                  <div class="form-group">
+                    <label for="cat-extrafield">Tipo de Campo Extra</label>
+                    <select id="cat-extrafield" required>
+                      <option value="none">Ninguno (Fijo)</option>
+                      <option value="capacity">Capacidad (Atracciones)</option>
+                      <option value="duration">Duración (Tiempo)</option>
+                      <option value="minQty">Cantidad Mínima (Snacks)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="cat-extralabel">Etiqueta del Campo</label>
+                    <input type="text" id="cat-extralabel" placeholder="Ej: Capacidad / Duración">
+                  </div>
+                </div>
+
+                <div style="display:flex; gap:0.5rem;">
+                  <button type="submit" class="btn-primary" style="flex:2;">Guardar Categoría</button>
+                  <button type="button" class="btn-secondary" id="btn-cancel-edit-category" style="flex:1;">Cancelar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: USUARIOS -->
+        <div id="admin-users" class="tab-content">
+          <div class="grid-2-1">
+            <div class="card">
+              <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1rem; font-size: 1.3rem;">Personal y Clientes Registrados</h3>
+              <div class="table-responsive">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Email</th>
+                      <th>Rol</th>
+                      <th>Teléfono</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-users-list"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1.25rem; font-size: 1.3rem;">Crear Cuenta de Personal</h3>
+              <form id="form-admin-user">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                  <label for="usr-nombre">Nombre Completo</label>
+                  <input type="text" id="usr-nombre" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                  <label for="usr-email">Correo Electrónico</label>
+                  <input type="email" id="usr-email" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                  <label for="usr-rol">Rol en el Sistema</label>
+                  <select id="usr-rol" required>
+                    <option value="recreacion">Recreador / Animador</option>
+                    <option value="logistica">Equipo de Logística / Montajes</option>
+                    <option value="compras">Abastecimiento (Compras)</option>
+                    <option value="superadmin">Administrador</option>
+                    <option value="cliente">Cliente</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                  <label for="usr-telefono">Teléfono</label>
+                  <input type="text" id="usr-telefono" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                  <label for="usr-password">Contraseña (Por defecto: 123456)</label>
+                  <input type="password" id="usr-password" placeholder="123456">
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%;">Crear Cuenta</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: AJUSTES -->
+        <div id="admin-settings" class="tab-content">
+          <div class="card">
+            <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1.5rem; font-size: 1.4rem;">Parámetros Estéticos y de Marca</h3>
+            <form id="form-admin-settings">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="sett-business-name">Nombre de la Empresa</label>
+                  <input type="text" id="sett-business-name" required>
+                </div>
+                <div class="form-group">
+                  <label for="sett-business-subtitle">Slogan o Subtítulo</label>
+                  <input type="text" id="sett-business-subtitle" required>
+                </div>
+                <div class="form-group">
+                  <label for="sett-contact-phone">WhatsApp de Contacto</label>
+                  <input type="text" id="sett-contact-phone" required>
+                </div>
+              </div>
+              <div class="form-grid" style="margin-top:1rem;">
+                <div class="form-group">
+                  <label for="sett-theme-palette">Paleta de Colores de Interfaz</label>
+                  <select id="sett-theme-palette">
+                    <option value="emerald">Verde Esmeralda (Megarecreación por defecto)</option>
+                    <option value="fiesta">Fiesta Multicolor (Rosa Neón / Alegre)</option>
+                    <option value="gold">Dorado Elegante (Sarahy por defecto)</option>
+                    <option value="sapphire">Azul Zafiro (Tecnológico / Corporativo)</option>
+                    <option value="ruby">Rojo Rubí (Dinámico / Enérgico)</option>
+                    <option value="rose">Rosado Fucsia (Fiesta Infantil / Infantil)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="sett-theme-font">Tipografía Base</label>
+                  <select id="sett-theme-font">
+                    <option value="montserrat">Montserrat (Recreación moderna)</option>
+                    <option value="outfit">Outfit (SaaS minimalista)</option>
+                    <option value="inter">Inter (Profesional corporativo)</option>
+                    <option value="playfair">Playfair Display (Clásico elegante)</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" class="btn-primary" style="margin-top: 1.5rem;">Guardar y Aplicar Cambios</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VISTA: SOY COMPRAS / INVENTARIO (INTRANET) -->
+      <!-- ========================================== -->
+      <section id="view-compras" class="view-section">
+        <div class="page-header">
+          <div>
+            <h2 class="page-title">Gestión de <span>Insumos</span></h2>
+            <p class="page-subtitle">Monitorea el inventario y stock mínimo de suministros de recreación y carritos.</p>
+          </div>
+        </div>
+
+        <div class="grid-2-1">
+          <div class="card">
+            <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1rem; font-size: 1.3rem;">Inventario de Insumos</h3>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Insumo</th>
+                    <th>Existencia</th>
+                    <th>Categoría</th>
+                    <th>Estado Alerta</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="compras-inventory-list"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1.25rem; font-size: 1.3rem;">Añadir Nuevo Insumo</h3>
+            <form id="form-compras-item">
+              <div class="form-group" style="margin-bottom: 1rem;">
+                <label for="i-nombre">Nombre del Insumo / Elemento</label>
+                <input type="text" id="i-nombre" required>
+              </div>
+              <div class="form-grid" style="margin-bottom: 1rem;">
+                <div class="form-group">
+                  <label for="i-cantidad">Cantidad Inicial</label>
+                  <input type="number" id="i-cantidad" step="0.01" required>
+                </div>
+                <div class="form-group">
+                  <label for="i-unidad">Unidad de Medida</label>
+                  <input type="text" id="i-unidad" placeholder="Ej: paquetes, unidades, kg" required>
+                </div>
+              </div>
+              <div class="form-grid" style="margin-bottom: 1.5rem;">
+                <div class="form-group">
+                  <label for="i-categoria">Categoría</label>
+                  <select id="i-categoria" required>
+                    <option value="alimentos">Snacks e Ingredientes</option>
+                    <option value="recreacion">Equipos de Recreación / Sopladores</option>
+                    <option value="decoracion">Decoración (Globos, cintas)</option>
+                    <option value="insumos">General (Cajas, vasos)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="i-minimo">Stock Mínimo Alerta</label>
+                  <input type="number" id="i-minimo" step="0.01" required>
+                </div>
+              </div>
+              <button type="submit" class="btn-primary" style="width: 100%;">Agregar al Inventario</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VISTA: OPERARIOS / AGENDA DE RECREADORES -->
+      <!-- ========================================== -->
+      <section id="view-operativo" class="view-section">
+        <div class="page-header">
+          <div>
+            <h2 class="page-title">Mi Agenda <span>Operativa</span></h2>
+            <p class="page-subtitle">Consulta tus asignaciones de eventos de animación y estado de montajes.</p>
+          </div>
+        </div>
+        
+        <div id="operativo-events-list">
+          <!-- Inyectado por JS -->
+        </div>
+      </section>
+      
+    </main>
+
+    <!-- FLOATING WHATSAPP BUTTON (Sólo público) -->
+    <a href="#" id="floating-whatsapp-btn" class="whatsapp-btn" target="_blank" style="display: none;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12.004 2C6.48 2 2 6.48 2 12.004c0 1.908.533 3.768 1.547 5.393L2.016 22l4.759-1.22c1.554.848 3.3 1.295 5.225 1.295 5.523 0 10.004-4.48 10.004-10.004C22.004 6.48 17.523 2 12.004 2zm.004 18.008c-1.684 0-3.268-.456-4.64-1.296l-.332-.2-.276.168-2.812.72.736-2.696.184-.288-.228-.36a7.934 7.934 0 0 1-1.124-4.053c0-4.408 3.592-8 8-8s8 3.592 8 8-3.592 8-8 8zm4.368-6c-.24-.12-1.416-.696-1.632-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06a6.568 6.568 0 0 1-1.92-1.184c-.74-.66-1.236-1.472-1.38-1.716-.14-.24-.016-.368.104-.488.108-.108.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.192-.468-.388-.408-.54-.416-.14-.004-.3-.004-.46-.004-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.692 2.584 4.1 3.624.572.248 1.02.396 1.368.508.576.184 1.1.16 1.516.1.464-.068 1.416-.58 1.62-1.116.2-.54.2-.996.14-1.116-.06-.12-.22-.18-.46-.3z"/>
+      </svg>
+    </a>
+
+    <!-- BANNER DE INSTALACIÓN PWA -->
+    <div id="pwa-install-banner" class="pwa-banner" style="display: none;">
+      <div class="pwa-banner-content">
+        <span>📲 Instala la app de <strong id="install-banner-app-name">Megarecreación</strong> en tu pantalla para una experiencia fluida.</span>
+        <div class="pwa-banner-buttons">
+          <button id="btn-pwa-install-action" class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Instalar</button>
+          <button id="btn-pwa-close-banner" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.8rem; border:none; background:transparent;">Luego</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: FIRMA DIGITAL -->
+    <div class="modal-backdrop" id="modal-firma-contrato">
+      <div class="modal-content" style="max-width: 500px;">
+        <button class="modal-close" id="btn-cerrar-modal-firma">&times;</button>
+        <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1rem; font-size:1.3rem;">Firma del Acuerdo de Alquiler</h3>
+        <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1.5rem;">Dibuja tu firma sobre el panel blanco táctil con tu dedo o mouse.</p>
+        
+        <div class="signature-container">
+          <canvas id="signature-pad" class="signature-pad-canvas" width="450" height="150"></canvas>
+        </div>
+        
+        <div style="display:flex; justify-content: space-between; align-items:center;">
+          <button class="btn-secondary" id="btn-clear-signature" style="padding:0.5rem 1rem; font-size:0.85rem;">Limpiar</button>
+          <button class="btn-primary" id="btn-guardar-signature" style="padding:0.5rem 1.2rem; font-size:0.85rem;">Guardar y Firmar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: NOTIFICACIONES (ESTILO INTRANET) -->
+    <div class="modal-backdrop" id="modal-notifications">
+      <div class="modal-content" style="max-width: 500px;">
+        <button class="modal-close" id="btn-cerrar-modal-notifications">&times;</button>
+        <div class="flex-between" style="align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+          <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin: 0; font-size: 1.3rem;">Notificaciones Recientes</h3>
+          <button class="btn-secondary" id="btn-notifications-read-all" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">Marcar todo leído</button>
+        </div>
+        <div id="notifications-list" style="max-height: 350px; overflow-y: auto;">
+          <!-- Inyectado por JS -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BIBLIOTECA JSpdf PARA EXPORTAR EN PDF POR CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <!-- SCRIPT SPA PRINCIPAL -->
+  <script type="module" src="js/app.js?v=2026_v1"></script>
+
+</body>
+</html>
