@@ -1329,6 +1329,16 @@ tr:hover td {
   .page-title {
     font-size: 1.7rem;
   }
+  
+  #btn-submit-cotizacion {
+    margin-bottom: 2.5rem !important;
+  }
+  
+  .whatsapp-btn {
+    bottom: 130px !important;
+    right: 1.25rem !important;
+    z-index: 1000 !important;
+  }
 }
 
 /* Teléfonos móviles pequeños */
