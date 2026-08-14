@@ -17,23 +17,29 @@ function initAuth() {
     if (firebaseUser) {
       try {
         const userDoc = await getDoc(doc(firestore, "users", firebaseUser.uid));
+        const isDefaultAdmin = firebaseUser.email.toLowerCase() === "admin@megarecreacion.com";
+        
         if (userDoc.exists()) {
           currentUser = { uid: firebaseUser.uid, ...userDoc.data() };
+          if (isDefaultAdmin && currentUser.role !== "superadmin") {
+            currentUser.role = "superadmin";
+            currentUser.name = "Mauricio Gómez";
+            await setDoc(doc(firestore, "users", firebaseUser.uid), {
+              role: "superadmin",
+              name: "Mauricio Gómez"
+            }, { merge: true });
+          }
         } else {
           // Auto-curar perfil si se creó en Auth pero no en Firestore
-          let role = "cliente";
-          let name = firebaseUser.displayName || "Usuario Registrado";
-          if (firebaseUser.email.toLowerCase() === "admin@megarecreacion.com") {
-            role = "superadmin";
-            name = "Mauricio Gómez";
-          }
+          let role = isDefaultAdmin ? "superadmin" : "cliente";
+          let name = isDefaultAdmin ? "Mauricio Gómez" : (firebaseUser.displayName || "Usuario Registrado");
           
           currentUser = { uid: firebaseUser.uid, email: firebaseUser.email, name, role };
           await setDoc(doc(firestore, "users", firebaseUser.uid), {
             email: firebaseUser.email,
             name,
             role,
-            phone: ""
+            phone: isDefaultAdmin ? "3163048505" : ""
           });
         }
         setStorageItem('megarecreacion_current_user', JSON.stringify(currentUser));
@@ -41,7 +47,8 @@ function initAuth() {
       } catch (e) {
         console.error("Error al cargar perfil desde Firestore:", e);
         // Fallback básico en memoria local
-        currentUser = { uid: firebaseUser.uid, email: firebaseUser.email, name: firebaseUser.displayName || "Usuario", role: "cliente" };
+        let role = firebaseUser.email.toLowerCase() === "admin@megarecreacion.com" ? "superadmin" : "cliente";
+        currentUser = { uid: firebaseUser.uid, email: firebaseUser.email, name: firebaseUser.displayName || "Usuario", role };
       }
     } else {
       currentUser = null;
