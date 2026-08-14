@@ -1265,6 +1265,7 @@ tr:hover td {
   /* Panel de presupuesto móvil pegajoso en la parte inferior */
   .cotizacion-summary-panel {
     position: fixed;
+    top: auto !important; /* Evita que herede top: 2rem de desktop y se estire por toda la pantalla */
     bottom: calc(54px + env(safe-area-inset-bottom, 0px));
     left: 0;
     right: 0;
