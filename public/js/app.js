@@ -1042,7 +1042,6 @@ if (btnConfirmPDF) {
     document.getElementById('modal-preview-cotizacion')?.classList.remove('active');
   });
 }
-}
 
 // Consultar disponibilidad pública
 const btnCheckAvail = document.getElementById('btn-check-availability');
