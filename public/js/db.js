@@ -100,19 +100,58 @@ async function seedInitialData() {
   console.log("Sembrado finalizado con éxito.");
 }
 
+// --- FALLBACKS LOCALES EN CASO DE ERROR O BASE DE DATOS VACÍA ---
+function getDefaultCategories() {
+  return [
+    { id: "inflables", name: "Inflables", description: "Selecciona los inflables que deseas alquilar. Todos incluyen montaje y operario.", extraField: "capacity", extraLabel: "Capacidad" },
+    { id: "alimentos", name: "Carros de Comida", description: "Carritos clásicos de feria con porciones ilimitadas. Haz clic para seleccionar y ajustar porciones.", extraField: "minQty", extraLabel: "Cantidad Mínima" },
+    { id: "shows", name: "Shows y Animaciones", description: "Animadores profesionales, shows temáticos y dinámicas cooperativas.", extraField: "duration", extraLabel: "Duración" },
+    { id: "corporativos", name: "Pausas Activas y Corporativo", description: "Actividades recreativas dirigidas para empresas e integraciones.", extraField: "duration", extraLabel: "Duración" },
+    { id: "adicionales", name: "Adicionales y Sonido", description: "Servicios complementarios de sonido, luces y efectos especiales.", extraField: "none", extraLabel: "" }
+  ];
+}
+
+function getDefaultProductsGrouped() {
+  const list = [
+    { id: "inf-castillo", category: "inflables", name: "Castillo Inflable Multicolor", price: 180000, description: "Medidas: 3m x 3m. Para niños de 3 a 7 años. Con soplador y operario.", capacity: "8 niños" },
+    { id: "inf-tobogan", category: "inflables", name: "Tobogán Gigante con Piscina", price: 280000, description: "Medidas: 6m x 3.5m. Seco o agua. Con soplador y operario.", capacity: "12 niños" },
+    { id: "ali-hotdogs", category: "alimentos", name: "Carro de Perros Calientes (Hot Dogs)", price: 4000, description: "Perros calientes con salsas y papita picada. Mínimo 50 porciones.", minQty: 50 },
+    { id: "ali-algodon", category: "alimentos", name: "Carro de Algodón de Azúcar", price: 3000, description: "Algodón gigante rosa y azul. Mínimo 50 porciones.", minQty: 50 },
+    { id: "sho-basico", category: "shows", name: "Recreación y Animación Básica", price: 220000, description: "3 horas, 2 animadores, juegos, bailes, globos y pintacaritas.", duration: "3 horas" },
+    { id: "corp-pausas", category: "corporativos", name: "Pausas Activas Temáticas", price: 180000, description: "Sesión de 30-40 minutos de gimnasia mental y física laboral.", duration: "40 minutos" },
+    { id: "adi-sonido", category: "adicionales", name: "Sonido Profesional y Luces", price: 150000, description: "Cabina de sonido, luces audiorítmicas y micrófono por 4 horas." }
+  ];
+  let grouped = {};
+  list.forEach(p => {
+    grouped[p.category] = grouped[p.category] || [];
+    grouped[p.category].push(p);
+  });
+  return grouped;
+}
+
 // --- CATEGORÍAS ---
 export async function getCategories() {
-  const snap = await getDocs(collection(firestore, "categories"));
-  let categories = [];
-  snap.forEach(doc => {
-    categories.push({ id: doc.id, ...doc.data() });
-  });
-  
-  if (categories.length === 0) {
-    await seedInitialData();
-    return await getCategories();
+  try {
+    const snap = await getDocs(collection(firestore, "categories"));
+    let categories = [];
+    snap.forEach(doc => {
+      categories.push({ id: doc.id, ...doc.data() });
+    });
+    
+    if (categories.length === 0) {
+      try {
+        await seedInitialData();
+        return await getCategories();
+      } catch (seedErr) {
+        console.warn("No se pudo sembrar Firestore (permisos). Cargando semillas locales in-memory.", seedErr);
+        return getDefaultCategories();
+      }
+    }
+    return categories;
+  } catch (e) {
+    console.error("Error al obtener categorías, usando fallback local:", e);
+    return getDefaultCategories();
   }
-  return categories;
 }
 
 export async function saveCategory(category) {
@@ -130,15 +169,24 @@ export async function deleteCategory(id) {
 
 // --- PRODUCTOS ---
 export async function getProducts() {
-  const snap = await getDocs(collection(firestore, "products"));
-  let products = {};
-  snap.forEach(doc => {
-    const data = doc.data();
-    const cat = data.category || "adicionales";
-    products[cat] = products[cat] || [];
-    products[cat].push({ id: doc.id, ...data });
-  });
-  return products;
+  try {
+    const snap = await getDocs(collection(firestore, "products"));
+    let products = {};
+    snap.forEach(doc => {
+      const data = doc.data();
+      const cat = data.category || "adicionales";
+      products[cat] = products[cat] || [];
+      products[cat].push({ id: doc.id, ...data });
+    });
+    
+    if (Object.keys(products).length === 0) {
+      return getDefaultProductsGrouped();
+    }
+    return products;
+  } catch (e) {
+    console.error("Error al obtener productos, usando fallback local:", e);
+    return getDefaultProductsGrouped();
+  }
 }
 
 export async function saveProduct(category, product) {
@@ -156,14 +204,23 @@ export async function deleteProduct(id, category) {
 
 // --- SETTINGS (MARCA) ---
 export async function getSettings() {
-  const snap = await getDoc(doc(firestore, "settings", "general"));
-  if (snap.exists()) {
-    return snap.data();
+  try {
+    const snap = await getDoc(doc(firestore, "settings", "general"));
+    if (snap.exists()) {
+      return snap.data();
+    }
+  } catch (e) {
+    console.error("Error al obtener configuraciones:", e);
   }
   return {
     businessName: "Megarecreación",
     businessSubtitle: "Inflables, Carros de Comida y Eventos",
-    businessLogoUrl: "assets/logo.jpg"
+    businessLogoUrl: "assets/logo.jpg",
+    telefonoContacto1: "3163048505",
+    telefonoContacto2: "3197188973",
+    themePalette: "rose",
+    themeFont: "outfit",
+    themeFontSize: "16px"
   };
 }
 

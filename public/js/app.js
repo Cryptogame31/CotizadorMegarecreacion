@@ -212,10 +212,10 @@ async function loadCommonData() {
     populateCotizadorForm();
     updateBrandingElements();
 
-    // Mostrar el selector demo si estamos en modo simulador (Mock)
+    // Ocultar el selector demo ya que estamos en Firebase de producción
     const demoSelector = document.getElementById('demo-auth-selector');
     if (demoSelector) {
-      demoSelector.style.display = DB.isUsingMock() ? 'block' : 'none';
+      demoSelector.style.display = 'none';
     }
   } catch (err) {
     console.error("Error cargando datos comunes:", err);
@@ -443,6 +443,12 @@ function updateNavigation(user) {
     mobA.className = 'mobile-nav-item active';
     mobA.innerHTML = `<span style="font-size:1.4rem;">💰</span><span>Cotizar</span>`;
     mobileNav.appendChild(mobA);
+
+    const mobLogin = document.createElement('a');
+    mobLogin.href = '#view-login';
+    mobLogin.className = 'mobile-nav-item';
+    mobLogin.innerHTML = `<span style="font-size:1.4rem;">🔑</span><span>Entrar</span>`;
+    mobileNav.appendChild(mobLogin);
   }
   updateBrandingElements();
 }
