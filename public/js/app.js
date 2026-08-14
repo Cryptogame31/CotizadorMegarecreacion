@@ -794,6 +794,16 @@ if (searchInput) {
   searchInput.addEventListener('input', () => renderAdminUsers());
 }
 
+// Cerrar sesión desde la barra lateral (Desktop)
+const btnLogoutSidebar = document.getElementById('btn-logout-sidebar');
+if (btnLogoutSidebar) {
+  btnLogoutSidebar.addEventListener('click', async () => {
+    if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+      await logout();
+    }
+  });
+}
+
 // Búsqueda en catálogo público
 const cotSearchServices = document.getElementById('cot-search-services');
 if (cotSearchServices) {
