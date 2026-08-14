@@ -1235,12 +1235,6 @@ tr:hover td {
 
 /* Responsiveness */
 @media (max-width: 1024px) {
-  :root {
-    --sidebar-width: 240px;
-  }
-}
-
-@media (max-width: 768px) {
   #app-container {
     flex-direction: column;
   }
@@ -1333,5 +1327,77 @@ tr:hover td {
   
   .page-title {
     font-size: 1.7rem;
+  }
+}
+
+/* Teléfonos móviles pequeños */
+@media (max-width: 480px) {
+  .main-content {
+    padding: 4.5rem 0.75rem 9.5rem 0.75rem;
+  }
+  
+  .card {
+    padding: 1.25rem 0.75rem;
+    border-radius: 12px;
+  }
+  
+  .page-title {
+    font-size: 1.45rem;
+  }
+  
+  .hero-banner-spectacular {
+    height: 180px;
+    padding: 1.25rem;
+  }
+  
+  .hero-banner-spectacular h2 {
+    font-size: 1.5rem;
+  }
+  
+  .hero-banner-spectacular p {
+    font-size: 0.85rem;
+  }
+  
+  /* Mostrar productos en cuadrícula de 2 columnas en teléfonos móviles */
+  .products-selector-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+  }
+  
+  .select-card {
+    padding: 0.8rem;
+    min-height: 120px;
+    border-radius: 10px;
+  }
+  
+  .select-card-name {
+    font-size: 0.85rem;
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+  }
+  
+  .select-card-price {
+    font-size: 0.85rem;
+  }
+  
+  .select-card-desc {
+    font-size: 0.68rem;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+
+  .cotizacion-summary-panel {
+    bottom: calc(52px + env(safe-area-inset-bottom, 0px));
+    padding: 0.6rem 0.85rem;
+  }
+
+  .cotizacion-summary-panel #cot-summary-breakdown .summary-row.total {
+    font-size: 0.95rem;
+  }
+
+  .cotizacion-summary-panel #btn-descargar-cotizacion {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.75rem;
   }
 }
