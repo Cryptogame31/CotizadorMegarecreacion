@@ -42,7 +42,7 @@
   
   <script>
     // Limpieza de caché antigua en actualizaciones
-    const APP_VERSION = '2026_v8';
+    const APP_VERSION = '2026_v9';
     if (window.location.protocol !== 'file:') {
       try {
         if (localStorage.getItem('mr_app_version') !== APP_VERSION) {
@@ -73,7 +73,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Megarecreación">
   
-  <link rel="stylesheet" href="css/styles.css?v=2026_v8">
+  <link rel="stylesheet" href="css/styles.css?v=2026_v9">
 </head>
 <body>
   
@@ -1076,13 +1076,30 @@
       </div>
     </div>
 
+    <!-- MODAL: PREVISUALIZACIÓN DE COTIZACIÓN -->
+    <div class="modal-backdrop" id="modal-preview-cotizacion">
+      <div class="modal-content" style="max-width: 500px;">
+        <button class="modal-close" id="btn-cerrar-modal-preview">&times;</button>
+        <h3 style="color: var(--accent-gold); font-family: var(--font-title); font-size: 1.45rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">📋 Resumen de tu Cotización</h3>
+        
+        <div id="modal-preview-items-container" style="max-height: 300px; overflow-y: auto; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+          <!-- Inyectado por JS -->
+        </div>
+        
+        <div style="display:flex; justify-content: flex-end; gap: 0.75rem;">
+          <button id="btn-modal-cancel-preview" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.8rem; border:1px solid var(--border-color); background:transparent;">Seguir Editando</button>
+          <button id="btn-modal-confirm-pdf" class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Confirmar y Descargar PDF 📥</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- BIBLIOTECA JSpdf PARA EXPORTAR EN PDF POR CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   
   <!-- SCRIPT SPA PRINCIPAL -->
-  <script type="module" src="js/app.js?v=2026_v8"></script>
+  <script type="module" src="js/app.js?v=2026_v9"></script>
 
 </body>
 </html>

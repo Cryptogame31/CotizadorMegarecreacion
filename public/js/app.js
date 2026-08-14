@@ -837,106 +837,211 @@ if (adminQuotesSearch) {
   adminQuotesSearch.addEventListener('input', () => renderAdminQuotations());
 }
 // Descargar cotización en PDF usando jsPDF
+// Descargar cotización en PDF usando jsPDF (Previsualización previa)
 const btnDownloadQuote = document.getElementById('btn-descargar-cotizacion');
 if (btnDownloadQuote) {
   btnDownloadQuote.addEventListener('click', () => {
-    if (!cotizacionActiva.total || cotizacionActiva.total === 0) {
-      alert("No hay ningún servicio seleccionado para descargar en PDF.");
-      return;
-    }
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    const nombre = document.getElementById('cot-nombre').value || 'Cliente';
-    const email = document.getElementById('cot-email').value || 'N/A';
-    const telefono = document.getElementById('cot-telefono').value || 'N/A';
-    const fecha = document.getElementById('cot-fecha').value || 'N/A';
-    const tipo = document.getElementById('cot-tipo').value || 'fiesta_infantil';
-
-    // Formatear PDF
-    doc.setFillColor(11, 13, 22); // Background header
-    doc.rect(0, 0, 210, 45, 'F');
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(22);
-    doc.setTextColor(16, 185, 129); // Emerald
-    doc.text("MEGARECREACIÓN", 15, 20);
-
-    doc.setFontSize(10);
-    doc.setTextColor(255, 255, 255);
-    doc.text("Atracciones inflables, snacks y shows divertidos", 15, 27);
-    doc.text("WhatsApp: 3163048505 - 3197188973", 15, 33);
-
-    doc.setFontSize(16);
-    doc.setTextColor(11, 13, 22);
-    doc.text("COTIZACIÓN DE SERVICIOS SOCIALES", 15, 60);
-
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Cliente: ${nombre}`, 15, 70);
-    doc.text(`Email: ${email}`, 15, 75);
-    doc.text(`Teléfono: ${telefono}`, 15, 80);
-    doc.text(`Fecha del Evento: ${fecha}`, 120, 70);
-    doc.text(`Tipo de Evento: ${tipo.replace('_', ' ').toUpperCase()}`, 120, 75);
-
-    // Tabla de Items
-    let y = 95;
-    doc.setFont("helvetica", "bold");
-    doc.setFillColor(240, 242, 245);
-    doc.rect(15, y - 5, 180, 8, 'F');
-    doc.setTextColor(0, 0, 0);
-    doc.text("Descripción del Servicio", 20, y);
-    doc.text("Valor", 160, y);
-    
-    doc.setFont("helvetica", "normal");
-    y += 10;
-
-    // Inyectar items del desglose de forma dinámica
-    const items = [];
-    allCategories.forEach(cat => {
-      const activeIds = cotizacionActiva[cat.id] || [];
-      const products = allProducts[cat.id] || [];
-      
-      if (cat.extraField === 'minQty') {
-        activeIds.forEach(i => {
-          const p = products.find(x => x.id === i.id);
-          if (p) items.push({ name: `${p.name} (x${i.qty} porc.)`, val: p.price * i.qty });
-        });
-      } else {
-        activeIds.forEach(id => {
-          const p = products.find(x => x.id === id);
-          if (p) items.push({ name: p.name, val: p.price });
-        });
-      }
-    });
-
-    items.forEach(item => {
-      if (y > 260) {
-        doc.addPage();
-        y = 20;
-      }
-      doc.text(item.name, 20, y);
-      doc.text(`$${item.val.toLocaleString()} COP`, 160, y);
-      y += 8;
-    });
-
-    // Total
-    y += 5;
-    doc.line(15, y - 5, 195, y - 5);
-    doc.setFont("helvetica", "bold");
-    doc.text("Total Estimado:", 120, y);
-    doc.text(`$${cotizacionActiva.total.toLocaleString()} COP`, 160, y);
-
-    // Nota legal
-    y += 20;
-    doc.setFontSize(8);
-    doc.setFont("helvetica", "italic");
-    doc.text("Nota: Este documento representa un presupuesto estimado en tiempo real. La separación de la fecha", 15, y);
-    doc.text("se formaliza únicamente con el abono del 50% de reserva y la firma del contrato respectivo.", 15, y + 4);
-
-    doc.save(`cotizacion-megarecreacion-${nombre.replace(/\s+/g, '-')}.pdf`);
+    showQuotePreviewModal();
   });
+}
+
+function getSelectedItemsBreakdown() {
+  const breakdown = [];
+  let subtotal = 0;
+  
+  allCategories.forEach(cat => {
+    const activeIds = cotizacionActiva[cat.id] || [];
+    const products = allProducts[cat.id] || [];
+    
+    if (cat.extraField === 'minQty') {
+      activeIds.forEach(item => {
+        const p = products.find(x => x.id === item.id);
+        if (p) {
+          const val = p.price * item.qty;
+          subtotal += val;
+          breakdown.push({ name: `${p.name} (x${item.qty} porc.)`, value: val, category: cat.name });
+        }
+      });
+    } else {
+      activeIds.forEach(id => {
+        const p = products.find(x => x.id === id);
+        if (p) {
+          subtotal += p.price;
+          breakdown.push({ name: p.name, value: p.price, category: cat.name });
+        }
+      });
+    }
+  });
+  return { breakdown, subtotal };
+}
+
+function showQuotePreviewModal() {
+  const { breakdown, subtotal } = getSelectedItemsBreakdown();
+  if (breakdown.length === 0) {
+    alert("No hay ningún servicio seleccionado para descargar en PDF.");
+    return;
+  }
+  
+  const container = document.getElementById('modal-preview-items-container');
+  if (container) {
+    container.innerHTML = `
+      <div style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:1.2rem;">
+        Confirma la lista de servicios seleccionados antes de generar tu documento PDF:
+      </div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; color:var(--text-primary); font-size:0.85rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--border-color); text-align:left; color:var(--accent-gold);">
+              <th style="padding:0.5rem 0;">Servicio</th>
+              <th style="padding:0.5rem 0; text-align:right;">Precio</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${breakdown.map(item => `
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <td style="padding:0.6rem 0; text-align:left;">
+                  <span style="font-weight:600; color:var(--text-primary); display:block;">${item.name}</span>
+                  <span style="font-size:0.75rem; color:var(--text-secondary); opacity:0.8;">Categoría: ${item.category}</span>
+                </td>
+                <td style="padding:0.6rem 0; text-align:right; font-weight:600; white-space:nowrap;">
+                  $${item.value.toLocaleString()} COP
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem; font-weight:bold; font-size:1.15rem; border-top:2px solid var(--accent-gold); padding-top:1rem;">
+        <span>Total Estimado:</span>
+        <span style="color:var(--accent-gold); font-family:var(--font-title); font-size:1.25rem;">$${subtotal.toLocaleString()} COP</span>
+      </div>
+    `;
+  }
+  
+  const modal = document.getElementById('modal-preview-cotizacion');
+  if (modal) modal.classList.add('active');
+}
+
+function descargarCotizacionPDF() {
+  if (!cotizacionActiva.total || cotizacionActiva.total === 0) {
+    alert("No hay ningún servicio seleccionado para descargar en PDF.");
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  const nombre = document.getElementById('cot-nombre').value || 'Cliente';
+  const email = document.getElementById('cot-email').value || 'N/A';
+  const telefono = document.getElementById('cot-telefono').value || 'N/A';
+  const fecha = document.getElementById('cot-fecha').value || 'N/A';
+  const tipo = document.getElementById('cot-tipo').value || 'fiesta_infantil';
+
+  // Formatear PDF
+  doc.setFillColor(11, 13, 22); // Background header
+  doc.rect(0, 0, 210, 45, 'F');
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(22);
+  doc.setTextColor(16, 185, 129); // Emerald
+  doc.text("MEGARECREACIÓN", 15, 20);
+
+  doc.setFontSize(10);
+  doc.setTextColor(255, 255, 255);
+  doc.text("Atracciones inflables, snacks y shows divertidos", 15, 27);
+  doc.text("WhatsApp: 3163048505 - 3197188973", 15, 33);
+
+  doc.setFontSize(16);
+  doc.setTextColor(11, 13, 22);
+  doc.text("COTIZACIÓN DE SERVICIOS SOCIALES", 15, 60);
+
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.text(`Cliente: ${nombre}`, 15, 70);
+  doc.text(`Email: ${email}`, 15, 75);
+  doc.text(`Teléfono: ${telefono}`, 15, 80);
+  doc.text(`Fecha del Evento: ${fecha}`, 120, 70);
+  doc.text(`Tipo de Evento: ${tipo.replace('_', ' ').toUpperCase()}`, 120, 75);
+
+  // Tabla de Items
+  let y = 95;
+  doc.setFont("helvetica", "bold");
+  doc.setFillColor(240, 242, 245);
+  doc.rect(15, y - 5, 180, 8, 'F');
+  doc.setTextColor(0, 0, 0);
+  doc.text("Descripción del Servicio", 20, y);
+  doc.text("Valor", 160, y);
+  
+  doc.setFont("helvetica", "normal");
+  y += 10;
+
+  // Inyectar items del desglose de forma dinámica
+  const items = [];
+  allCategories.forEach(cat => {
+    const activeIds = cotizacionActiva[cat.id] || [];
+    const products = allProducts[cat.id] || [];
+    
+    if (cat.extraField === 'minQty') {
+      activeIds.forEach(i => {
+        const p = products.find(x => x.id === i.id);
+        if (p) items.push({ name: `${p.name} (x${i.qty} porc.)`, val: p.price * i.qty });
+      });
+    } else {
+      activeIds.forEach(id => {
+        const p = products.find(x => x.id === id);
+        if (p) items.push({ name: p.name, val: p.price });
+      });
+    }
+  });
+
+  items.forEach(item => {
+    if (y > 260) {
+      doc.addPage();
+      y = 20;
+    }
+    doc.text(item.name, 20, y);
+    doc.text(`$${item.val.toLocaleString()} COP`, 160, y);
+    y += 8;
+  });
+
+  // Total
+  y += 5;
+  doc.line(15, y - 5, 195, y - 5);
+  doc.setFont("helvetica", "bold");
+  doc.text("Total Estimado:", 120, y);
+  doc.text(`$${cotizacionActiva.total.toLocaleString()} COP`, 160, y);
+
+  // Nota legal
+  y += 20;
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "italic");
+  doc.text("Nota: Este documento representa un presupuesto estimado en tiempo real. La separación de la fecha", 15, y);
+  doc.text("se formaliza únicamente con el abono del 50% de reserva y la firma del contrato respectivo.", 15, y + 4);
+
+  doc.save(`cotizacion-megarecreacion-${nombre.replace(/\s+/g, '-')}.pdf`);
+}
+
+// Configurar eventos del modal de previsualización
+const btnClosePreview = document.getElementById('btn-cerrar-modal-preview');
+const btnCancelPreview = document.getElementById('btn-modal-cancel-preview');
+const btnConfirmPDF = document.getElementById('btn-modal-confirm-pdf');
+
+if (btnClosePreview) {
+  btnClosePreview.addEventListener('click', () => {
+    document.getElementById('modal-preview-cotizacion')?.classList.remove('active');
+  });
+}
+if (btnCancelPreview) {
+  btnCancelPreview.addEventListener('click', () => {
+    document.getElementById('modal-preview-cotizacion')?.classList.remove('active');
+  });
+}
+if (btnConfirmPDF) {
+  btnConfirmPDF.addEventListener('click', () => {
+    descargarCotizacionPDF();
+    document.getElementById('modal-preview-cotizacion')?.classList.remove('active');
+  });
+}
 }
 
 // Consultar disponibilidad pública
