@@ -1,10 +1,10 @@
-const CACHE_NAME = 'megarecreacion-v1';
+const CACHE_NAME = 'megarecreacion-v4';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './css/styles.css',
-  './js/app.js',
+  './css/styles.css?v=2026_v5',
+  './js/app.js?v=2026_v5',
   './js/db.js',
   './js/auth.js',
   './assets/logo.jpg'
@@ -34,32 +34,41 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// Estrategia Network-First para evitar el "Service Worker Trap" (bloqueo de caché)
 self.addEventListener('fetch', (event) => {
-  // Evitar interceptar llamadas de la API REST
-  if (event.request.url.includes('/api/')) {
+  // Ignorar peticiones que no sean GET o que vayan al backend/firebase
+  if (
+    event.request.method !== 'GET' || 
+    event.request.url.includes('/api/') ||
+    event.request.url.includes('firestore.googleapis.com') ||
+    event.request.url.includes('identitytoolkit.googleapis.com')
+  ) {
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).then((response) => {
-        // Guardar en caché recursos estáticos nuevos
-        if (event.request.method === 'GET' && response.status === 200) {
+    fetch(event.request)
+      .then((response) => {
+        // Si la respuesta es válida, clonar y guardar en caché
+        if (response.status === 200) {
           const responseToCache = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache);
           });
         }
         return response;
-      }).catch(() => {
-        // Fallback offline básico
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
-      });
-    })
+      })
+      .catch(() => {
+        // En caso de estar offline, servir desde el caché
+        return caches.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          // Si es navegación de página, fallback al index.html
+          if (event.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+        });
+      })
   );
 });
