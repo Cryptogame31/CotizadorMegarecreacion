@@ -649,6 +649,15 @@ function calculateCotizacion() {
     }
   }
 
+  const summaryPanel = document.querySelector('.cotizacion-summary-panel');
+  if (summaryPanel) {
+    if (breakdown.length === 0) {
+      summaryPanel.classList.add('summary-empty');
+    } else {
+      summaryPanel.classList.remove('summary-empty');
+    }
+  }
+
   cotizacionActiva.total = subtotal;
 }
 

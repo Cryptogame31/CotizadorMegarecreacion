@@ -1256,6 +1256,10 @@ tr:hover td {
     margin-left: 0;
     padding: 5rem 1.25rem 9rem 1.25rem; /* Expanded padding for headers, nav, and sticky budget */
   }
+
+  .view-section {
+    padding-bottom: 180px !important;
+  }
   
   .grid-2-1, .grid-1-1 {
     grid-template-columns: 1fr;
@@ -1282,6 +1286,10 @@ tr:hover td {
     align-items: center;
     gap: 0.75rem;
     box-sizing: border-box;
+  }
+
+  .cotizacion-summary-panel.summary-empty {
+    display: none !important;
   }
   
   .cotizacion-summary-panel h3.summary-header {
