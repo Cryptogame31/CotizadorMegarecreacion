@@ -1,12 +1,18 @@
 {
   "short_name": "Megarecreación",
-  "name": "Megarecreación - Gestión Integral",
+  "name": "Megarecreación - Gestión e Inflables",
   "icons": [
     {
-      "src": "assets/logo.jpg",
-      "type": "image/jpeg",
+      "src": "assets/logo.png",
+      "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
+    },
+    {
+      "src": "assets/logo.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
     }
   ],
   "start_url": "./index.html",

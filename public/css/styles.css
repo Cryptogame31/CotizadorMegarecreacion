@@ -1333,11 +1333,16 @@ tr:hover td {
   #btn-submit-cotizacion {
     margin-bottom: 120px !important;
   }
-  
+
   .whatsapp-btn {
     bottom: 130px !important;
     right: 1.25rem !important;
     z-index: 1000 !important;
+  }
+  
+  .pwa-banner {
+    bottom: calc(120px + env(safe-area-inset-bottom, 0px)) !important;
+    z-index: 10000 !important;
   }
 }
 
