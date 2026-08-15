@@ -2041,38 +2041,61 @@ async function renderAdminProducts() {
     
     allCategories.forEach(cat => {
       const catProducts = products[cat.id] || [];
-      catProducts.forEach(p => {
-        const matchesQuery = (p.name || '').toLowerCase().includes(query) || 
-                             (p.description || '').toLowerCase().includes(query) || 
-                             (cat.name || '').toLowerCase().includes(query);
-        if (!matchesQuery && query !== '') return;
+      const filteredProducts = catProducts.filter(p => {
+        return (p.name || '').toLowerCase().includes(query) || 
+               (p.description || '').toLowerCase().includes(query) ||
+               (cat.name || '').toLowerCase().includes(query);
+      });
 
-        let extraInfo = '';
-        if (cat.extraField === 'capacity') {
-          extraInfo = `${cat.extraLabel || 'Capacidad'}: ${p.capacity || 'N/A'}`;
-        } else if (cat.extraField === 'duration') {
-          extraInfo = `${cat.extraLabel || 'Duración'}: ${p.duration || 'N/A'}`;
-        } else if (cat.extraField === 'minQty') {
-          extraInfo = `${cat.extraLabel || 'Cantidad Mínima'}: ${p.minQty || 'N/A'}`;
-        }
-
+      if (filteredProducts.length > 0 || query === '') {
         html += `
-          <tr>
-            <td><span class="badge badge-confirmada" style="font-size:0.75rem;">${cat.name.toUpperCase()}</span></td>
-            <td>
-              <strong>${p.name}</strong><br>
-              <span style="font-size:0.75rem; color:var(--text-secondary);">${p.description}</span><br>
-              ${p.viewLink ? `<a href="${p.viewLink}" target="_blank" style="font-size:0.75rem; color:var(--accent-gold); text-decoration:underline; font-weight:600; display:inline-block; margin-top:0.25rem;">📸 Enlace de Visualización</a><br>` : ''}
-              <span style="font-size:0.75rem; color:var(--accent-gold); font-weight:600;">${extraInfo}</span>
-            </td>
-            <td><strong>$${p.price.toLocaleString()} COP</strong></td>
-            <td>
-              <button class="btn-qty-minus" style="display:inline-flex; width:26px; height:26px; font-size:0.75rem;" onclick="editProduct('${cat.id}', '${p.id}')" title="Editar">✏</button>
-              <button class="btn-qty-minus" style="display:inline-flex; width:26px; height:26px; font-size:0.75rem; background-color:rgba(239, 68, 68, 0.1); border-color:var(--danger); color:var(--danger);" onclick="deleteProduct('${p.id}', '${cat.id}')" title="Eliminar">🗑</button>
+          <tr style="background: rgba(16, 185, 129, 0.05); font-weight: bold; border-left: 4px solid var(--accent-gold);">
+            <td colspan="4" style="padding: 0.75rem 1rem; color: var(--accent-gold); font-family: var(--font-title); font-size: 0.95rem;">
+              📂 ${cat.name.toUpperCase()} <span style="font-size: 0.75rem; font-weight: normal; color: var(--text-secondary); margin-left: 0.5rem;">(${cat.description})</span>
             </td>
           </tr>
         `;
-      });
+        
+        if (filteredProducts.length === 0) {
+          html += `
+            <tr>
+              <td colspan="4" style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 1rem;">
+                No hay productos registrados en esta categoría.
+              </td>
+            </tr>
+          `;
+        } else {
+          filteredProducts.forEach(p => {
+            let extraInfo = '';
+            if (cat.extraField === 'capacity') {
+              extraInfo = `👥 ${cat.extraLabel || 'Capacidad'}: ${p.capacity || 'N/A'}`;
+            } else if (cat.extraField === 'duration') {
+              extraInfo = `⏱ ${cat.extraLabel || 'Duración'}: ${p.duration || 'N/A'}`;
+            } else if (cat.extraField === 'minQty') {
+              extraInfo = `📦 ${cat.extraLabel || 'Cantidad Mínima'}: ${p.minQty || 'N/A'} porciones`;
+            }
+
+            html += `
+              <tr id="admin-prod-row-${p.id}">
+                <td style="padding-left: 1rem;">
+                  <span class="badge badge-pendiente" style="font-size:0.65rem; text-transform:uppercase;">${cat.id}</span>
+                </td>
+                <td>
+                  <strong style="color:var(--text-primary);">${p.name}</strong><br>
+                  <span style="font-size:0.8rem; color:var(--text-secondary);">${p.description}</span><br>
+                  ${p.viewLink ? `<a href="${p.viewLink}" target="_blank" style="font-size:0.75rem; color:var(--accent-gold); text-decoration:underline; font-weight:600; display:inline-block; margin-top:0.25rem;">📸 Ver Enlace de Fotos</a><br>` : ''}
+                  ${extraInfo ? `<span style="font-size:0.78rem; color:var(--accent-gold); font-weight:600; display:inline-block; margin-top:0.25rem;">${extraInfo}</span>` : ''}
+                </td>
+                <td><strong>$${p.price.toLocaleString()} COP</strong></td>
+                <td style="white-space:nowrap;">
+                  <button class="btn-qty-plus" style="display:inline-flex; width:28px; height:28px; font-size:0.8rem; align-items:center; justify-content:center; margin-right: 0.25rem;" onclick="editProduct('${cat.id}', '${p.id}')" title="Editar">✏</button>
+                  <button class="btn-qty-minus" style="display:inline-flex; width:28px; height:28px; font-size:0.8rem; align-items:center; justify-content:center; background-color:rgba(239, 68, 68, 0.15); border-color:var(--danger); color:var(--danger);" onclick="deleteProduct('${p.id}', '${cat.id}')" title="Eliminar">🗑</button>
+                </td>
+              </tr>
+            `;
+          });
+        }
+      }
     });
 
     if (html === '') {

@@ -42,7 +42,7 @@
   
   <script>
     // Limpieza de caché antigua en actualizaciones
-    const APP_VERSION = '2026_v10';
+    const APP_VERSION = '2026_v11';
     if (window.location.protocol !== 'file:') {
       try {
         if (localStorage.getItem('mr_app_version') !== APP_VERSION) {
@@ -73,7 +73,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Megarecreación">
   
-  <link rel="stylesheet" href="css/styles.css?v=2026_v10">
+  <link rel="stylesheet" href="css/styles.css?v=2026_v11">
 </head>
 <body>
   
@@ -714,7 +714,19 @@
 
             <!-- Formulario de Crear/Editar -->
             <div class="card">
-              <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1.25rem; font-size: 1.3rem;" id="admin-product-form-title">Agregar Nuevo Servicio</h3>
+              <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 0.5rem; font-size: 1.3rem;" id="admin-product-form-title">Agregar Nuevo Servicio</h3>
+              
+              <!-- Caja Guía Jerárquica e Instructiva -->
+              <div style="background: rgba(16, 185, 129, 0.04); border-left: 3px solid var(--accent-gold); padding: 0.75rem; border-radius: 6px; font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.45;">
+                📌 <strong>Guía del Administrador:</strong><br>
+                1. Selecciona la <strong>Categoría</strong> del servicio.<br>
+                2. Dependiendo de la categoría elegida, el formulario habilitará campos específicos al final:<br>
+                • <strong>Inflables:</strong> Requiere indicar la <em>Capacidad de niños</em>.<br>
+                • <strong>Alimentos:</strong> Define la <em>Cantidad Mínima</em> de porciones. El precio base debe ser el precio total por esa cantidad de porciones.<br>
+                • <strong>Shows / Corp:</strong> Requiere indicar la <em>Duración</em> estándar del servicio.<br>
+                • <strong>Adicionales:</strong> Tarifa plana normal.
+              </div>
+
               <form id="form-admin-product">
                 <input type="hidden" id="prod-id" value="">
                 
@@ -1099,7 +1111,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   
   <!-- SCRIPT SPA PRINCIPAL -->
-  <script type="module" src="js/app.js?v=2026_v10"></script>
+  <script type="module" src="js/app.js?v=2026_v11"></script>
 
 </body>
 </html>
