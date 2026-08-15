@@ -1,13 +1,13 @@
-const CACHE_NAME = 'megarecreacion-v4';
+const CACHE_NAME = 'megarecreacion-v5';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './css/styles.css?v=2026_v5',
-  './js/app.js?v=2026_v5',
   './js/db.js',
   './js/auth.js',
-  './assets/logo.jpg'
+  './assets/logo.jpg',
+  './assets/logo-192.png',
+  './assets/logo-512.png'
 ];
 
 self.addEventListener('install', (event) => {

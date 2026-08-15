@@ -3,13 +3,13 @@
   "name": "Megarecreación - Gestión e Inflables",
   "icons": [
     {
-      "src": "assets/logo.png",
+      "src": "assets/logo-512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
     },
     {
-      "src": "assets/logo.png",
+      "src": "assets/logo-192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any"
