@@ -42,7 +42,7 @@
   
   <script>
     // Limpieza de caché antigua en actualizaciones
-    const APP_VERSION = '2026_v12';
+    const APP_VERSION = '2026_v13';
     if (window.location.protocol !== 'file:') {
       try {
         if (localStorage.getItem('mr_app_version') !== APP_VERSION) {
@@ -73,7 +73,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Megarecreación">
   
-  <link rel="stylesheet" href="css/styles.css?v=2026_v12">
+  <link rel="stylesheet" href="css/styles.css?v=2026_v13">
 </head>
 <body>
   
@@ -686,10 +686,13 @@
 
         <!-- TAB: CATALOGO (PRODUCTOS/SERVICIOS) -->
         <div id="admin-products" class="tab-content">
-          <div class="grid-2-1">
+          <div style="display: flex; flex-direction: column; gap: 2.5rem;">
             <!-- Tabla de Catálogo -->
             <div class="card">
-              <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1rem; font-size: 1.3rem;">Catálogo Activo de Servicios</h3>
+              <div class="flex-between" style="align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin: 0; font-size: 1.4rem;">Catálogo Activo de Servicios</h3>
+                <button class="btn-primary" id="btn-admin-open-product-modal" style="padding: 0.5rem 1.25rem; font-size: 0.85rem;">➕ Agregar Servicio</button>
+              </div>
               
               <div style="margin-bottom: 1.25rem;">
                 <input type="text" id="admin-products-search" placeholder="🔍 Buscar por servicio, categoría o descripción..." style="width: 100%; padding: 0.6rem; font-size: 0.9rem; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); color: #fff;">
@@ -712,85 +715,12 @@
               </div>
             </div>
 
-            <!-- Formulario de Crear/Editar -->
-            <div class="card">
-              <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 0.5rem; font-size: 1.3rem;" id="admin-product-form-title">Agregar Nuevo Servicio</h3>
-              
-              <!-- Caja Guía Jerárquica e Instructiva -->
-              <div style="background: rgba(16, 185, 129, 0.04); border-left: 3px solid var(--accent-gold); padding: 0.75rem; border-radius: 6px; font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.45;">
-                📌 <strong>Guía del Administrador:</strong><br>
-                1. Selecciona la <strong>Categoría</strong> del servicio.<br>
-                2. Dependiendo de la categoría elegida, el formulario habilitará campos específicos al final:<br>
-                • <strong>Inflables:</strong> Requiere indicar la <em>Capacidad de niños</em>.<br>
-                • <strong>Alimentos:</strong> Define la <em>Cantidad Mínima</em> de porciones. El precio base debe ser el precio total por esa cantidad de porciones.<br>
-                • <strong>Shows / Corp:</strong> Requiere indicar la <em>Duración</em> estándar del servicio.<br>
-                • <strong>Adicionales:</strong> Tarifa plana normal.
-              </div>
-
-              <form id="form-admin-product">
-                <input type="hidden" id="prod-id" value="">
-                
-                <div class="form-group" style="margin-bottom: 1rem;">
-                  <label for="prod-category">Categoría del Servicio</label>
-                  <select id="prod-category" required>
-                    <!-- Inyectado dinámicamente -->
-                  </select>
-                </div>
-                
-                <div class="form-group" style="margin-bottom: 1rem;">
-                  <label for="prod-name">Nombre del Producto / Servicio</label>
-                  <input type="text" id="prod-name" placeholder="Ej: Castillo de Tobogán Seco" required>
-                </div>
-
-                <div class="form-group" style="margin-bottom: 1rem;">
-                  <label for="prod-price">Precio Base (COP)</label>
-                  <input type="number" id="prod-price" placeholder="Ej: 150000" min="0" required>
-                </div>
-
-                <div class="form-group" style="margin-bottom: 1rem;">
-                  <label for="prod-desc">Descripción General</label>
-                  <textarea id="prod-desc" rows="3" placeholder="Detalles de dimensiones, capacidad, etc." required style="width: 100%; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 0.75rem; color: #fff; font-family: inherit; font-size: 0.9rem;"></textarea>
-                </div>
-
-                <div class="form-group" style="margin-bottom: 1rem;">
-                  <label for="prod-link">Enlace de Visualización (Ver más / Instagram)</label>
-                  <input type="url" id="prod-link" placeholder="https://instagram.com/... o https://youtube.com/..." style="width:100%;">
-                </div>
-
-                <!-- Campo dinámico: Capacidad (Inflables) -->
-                <div class="form-group din-prod-field" id="prod-field-capacity" style="margin-bottom: 1rem;">
-                  <label for="prod-capacity">Capacidad de Personas</label>
-                  <input type="text" id="prod-capacity" placeholder="Ej: Hasta 8 niños simultáneamente">
-                </div>
-
-                <!-- Campo dinámico: Duración (Shows / Corporativos) -->
-                <div class="form-group din-prod-field" id="prod-field-duration" style="margin-bottom: 1rem; display: none;">
-                  <label for="prod-duration">Duración del Servicio</label>
-                  <input type="text" id="prod-duration" placeholder="Ej: 3 horas / 45 minutos">
-                </div>
-
-                <!-- Campo dinámico: Cantidad Mínima (Alimentos) -->
-                <div class="form-group din-prod-field" id="prod-field-minqty" style="margin-bottom: 1.5rem; display: none;">
-                  <label for="prod-minqty">Cantidad Mínima de Porciones</label>
-                  <input type="number" id="prod-minqty" placeholder="Ej: 50" min="10" value="50">
-                </div>
-
-                <div style="display:flex; gap:0.5rem;">
-                  <button type="submit" class="btn-primary" style="flex:2;">Guardar Producto</button>
-                  <button type="button" class="btn-secondary" id="btn-cancel-edit-product" style="flex:1;">Cancelar</button>
-                </div>
-              </form>
-            </div>
-          </div>
-
-          <!-- DIVISOR DE SECCIÓN -->
-          <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 3rem 0;">
-
-          <!-- CATEGORY CRUD GRID -->
-          <div class="grid-2-1">
             <!-- Tabla de Categorías -->
             <div class="card">
-              <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1.5rem; font-size: 1.3rem;">Categorías de Servicios Disponibles</h3>
+              <div class="flex-between" style="align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin: 0; font-size: 1.4rem;">Categorías de Servicios Disponibles</h3>
+                <button class="btn-primary" id="btn-admin-open-category-modal" style="padding: 0.5rem 1.25rem; font-size: 0.85rem;">➕ Agregar Categoría</button>
+              </div>
               <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                 <table>
                   <thead>
@@ -806,45 +736,6 @@
                   </tbody>
                 </table>
               </div>
-            </div>
-
-            <!-- Formulario de Categorías -->
-            <div class="card">
-              <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1.25rem; font-size: 1.3rem;" id="admin-category-form-title">Agregar Nueva Categoría</h3>
-              <form id="form-admin-category">
-                <input type="hidden" id="cat-id" value="">
-
-                <div class="form-group" style="margin-bottom: 1rem;">
-                  <label for="cat-name">Nombre de la Categoría</label>
-                  <input type="text" id="cat-name" placeholder="Ej: Decoración de Globos" required>
-                </div>
-
-                <div class="form-group" style="margin-bottom: 1rem;">
-                  <label for="cat-desc">Descripción General (Público)</label>
-                  <textarea id="cat-desc" rows="2" placeholder="Ej: Globos y temáticas decorativas para tu fiesta..." required style="width: 100%; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 0.75rem; color: #fff; font-family: inherit; font-size: 0.9rem;"></textarea>
-                </div>
-
-                <div class="form-grid" style="margin-bottom: 1.5rem;">
-                  <div class="form-group">
-                    <label for="cat-extrafield">Tipo de Campo Extra</label>
-                    <select id="cat-extrafield" required>
-                      <option value="none">Ninguno (Fijo)</option>
-                      <option value="capacity">Capacidad (Atracciones)</option>
-                      <option value="duration">Duración (Tiempo)</option>
-                      <option value="minQty">Cantidad Mínima (Snacks)</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label for="cat-extralabel">Etiqueta del Campo</label>
-                    <input type="text" id="cat-extralabel" placeholder="Ej: Capacidad / Duración">
-                  </div>
-                </div>
-
-                <div style="display:flex; gap:0.5rem;">
-                  <button type="submit" class="btn-primary" style="flex:2;">Guardar Categoría</button>
-                  <button type="button" class="btn-secondary" id="btn-cancel-edit-category" style="flex:1;">Cancelar</button>
-                </div>
-              </form>
             </div>
           </div>
         </div>
@@ -1105,13 +996,129 @@
       </div>
     </div>
 
+    <!-- MODAL: CREAR/EDITAR PRODUCTO -->
+    <div class="modal-backdrop" id="modal-admin-product">
+      <div class="modal-content" style="max-width: 550px; width: 95%;">
+        <button class="modal-close" id="btn-cerrar-modal-product">&times;</button>
+        <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 0.5rem; font-size: 1.3rem;" id="admin-product-form-title">Agregar Nuevo Servicio</h3>
+        
+        <!-- Caja Guía Jerárquica e Instructiva -->
+        <div style="background: rgba(16, 185, 129, 0.04); border-left: 3px solid var(--accent-gold); padding: 0.75rem; border-radius: 6px; font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.45;">
+          📌 <strong>Guía del Administrador:</strong><br>
+          1. Selecciona la <strong>Categoría</strong> del servicio.<br>
+          2. El formulario habilitará campos específicos al final según la categoría:<br>
+          • <strong>Inflables:</strong> Requiere indicar la <em>Capacidad de niños</em>.<br>
+          • <strong>Alimentos:</strong> Define la <em>Cantidad Mínima</em> de porciones. El precio base debe ser el precio total por esa cantidad de porciones.<br>
+          • <strong>Shows / Corp:</strong> Requiere indicar la <em>Duración</em> estándar del servicio.<br>
+          • <strong>Adicionales:</strong> Tarifa plana normal.
+        </div>
+
+        <form id="form-admin-product">
+          <input type="hidden" id="prod-id" value="">
+          
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="prod-category">Categoría del Servicio</label>
+            <select id="prod-category" required style="width: 100%;">
+              <!-- Inyectado dinámicamente -->
+            </select>
+          </div>
+          
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="prod-name">Nombre del Producto / Servicio</label>
+            <input type="text" id="prod-name" placeholder="Ej: Castillo de Tobogán Seco" required style="width: 100%;">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="prod-price">Precio Base (COP)</label>
+            <input type="number" id="prod-price" placeholder="Ej: 150000" min="0" required style="width: 100%;">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="prod-desc">Descripción General</label>
+            <textarea id="prod-desc" rows="3" placeholder="Detalles de dimensiones, capacidad, etc." required style="width: 100%; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 0.75rem; color: #fff; font-family: inherit; font-size: 0.9rem;"></textarea>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="prod-link">Enlace de Visualización (Ver más / Instagram)</label>
+            <input type="url" id="prod-link" placeholder="https://instagram.com/... o https://youtube.com/..." style="width: 100%;">
+          </div>
+
+          <!-- Campo dinámico: Capacidad (Inflables) -->
+          <div class="form-group din-prod-field" id="prod-field-capacity" style="margin-bottom: 1rem;">
+            <label for="prod-capacity">Capacidad de Personas</label>
+            <input type="text" id="prod-capacity" placeholder="Ej: Hasta 8 niños simultáneamente" style="width: 100%;">
+          </div>
+
+          <!-- Campo dinámico: Duración (Shows / Corporativos) -->
+          <div class="form-group din-prod-field" id="prod-field-duration" style="margin-bottom: 1rem; display: none;">
+            <label for="prod-duration">Duración del Servicio</label>
+            <input type="text" id="prod-duration" placeholder="Ej: 3 horas / 45 minutos" style="width: 100%;">
+          </div>
+
+          <!-- Campo dinámico: Cantidad Mínima (Alimentos) -->
+          <div class="form-group din-prod-field" id="prod-field-minqty" style="margin-bottom: 1.5rem; display: none;">
+            <label for="prod-minqty">Cantidad Mínima de Porciones</label>
+            <input type="number" id="prod-minqty" placeholder="Ej: 50" min="10" value="50" style="width: 100%;">
+          </div>
+
+          <div style="display:flex; gap:0.5rem; margin-top: 1.5rem;">
+            <button type="submit" class="btn-primary" style="flex:2;">Guardar Producto</button>
+            <button type="button" class="btn-secondary" id="btn-cancel-edit-product" style="flex:1;">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL: CREAR/EDITAR CATEGORÍA -->
+    <div class="modal-backdrop" id="modal-admin-category">
+      <div class="modal-content" style="max-width: 500px; width: 95%;">
+        <button class="modal-close" id="btn-cerrar-modal-category">&times;</button>
+        <h3 style="font-family: var(--font-title); color: var(--accent-gold); margin-bottom: 1.25rem; font-size: 1.3rem;" id="admin-category-form-title">Agregar Nueva Categoría</h3>
+        
+        <form id="form-admin-category">
+          <input type="hidden" id="cat-id" value="">
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="cat-name">Nombre de la Categoría</label>
+            <input type="text" id="cat-name" placeholder="Ej: Decoración de Globos" required style="width: 100%;">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="cat-desc">Descripción General (Público)</label>
+            <textarea id="cat-desc" rows="2" placeholder="Ej: Globos y temáticas decorativas para tu fiesta..." required style="width: 100%; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 0.75rem; color: #fff; font-family: inherit; font-size: 0.9rem;"></textarea>
+          </div>
+
+          <div class="form-grid" style="margin-bottom: 1.5rem;">
+            <div class="form-group">
+              <label for="cat-extrafield">Tipo de Campo Extra</label>
+              <select id="cat-extrafield" required style="width: 100%;">
+                <option value="none">Ninguno (Fijo)</option>
+                <option value="capacity">Capacidad (Atracciones)</option>
+                <option value="duration">Duración (Tiempo)</option>
+                <option value="minQty">Cantidad Mínima (Snacks)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="cat-extralabel">Etiqueta del Campo</label>
+              <input type="text" id="cat-extralabel" placeholder="Ej: Capacidad / Duración" style="width: 100%;">
+            </div>
+          </div>
+
+          <div style="display:flex; gap:0.5rem; margin-top: 1.5rem;">
+            <button type="submit" class="btn-primary" style="flex:2;">Guardar Categoría</button>
+            <button type="button" class="btn-secondary" id="btn-cancel-edit-category" style="flex:1;">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </div>
 
   <!-- BIBLIOTECA JSpdf PARA EXPORTAR EN PDF POR CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   
   <!-- SCRIPT SPA PRINCIPAL -->
-  <script type="module" src="js/app.js?v=2026_v12"></script>
+  <script type="module" src="js/app.js?v=2026_v13"></script>
 
 </body>
 </html>

@@ -2138,6 +2138,7 @@ window.editProduct = async function(category, id) {
     }
     
     document.getElementById('prod-name').focus();
+    document.getElementById('modal-admin-product')?.classList.add('active');
   } catch (err) {
     alert("Error al cargar producto: " + err.message);
   }
@@ -2166,6 +2167,23 @@ function resetProductForm() {
   if (allCategories.length > 0) {
     updateDynamicProductFields(allCategories[0].id);
   }
+  document.getElementById('modal-admin-product')?.classList.remove('active');
+}
+
+// Vincular botones abridores y cerradores de modals de catálogo
+const btnOpenProdModal = document.getElementById('btn-admin-open-product-modal');
+if (btnOpenProdModal) {
+  btnOpenProdModal.addEventListener('click', () => {
+    resetProductForm();
+    document.getElementById('modal-admin-product')?.classList.add('active');
+  });
+}
+
+const btnCloseProdModal = document.getElementById('btn-cerrar-modal-product');
+if (btnCloseProdModal) {
+  btnCloseProdModal.addEventListener('click', () => {
+    resetProductForm();
+  });
 }
 
 function updateDynamicProductFields(catId) {
@@ -2300,8 +2318,9 @@ window.editCategory = async function(id) {
     document.getElementById('cat-extrafield').value = c.extraField || 'none';
     document.getElementById('cat-extralabel').value = c.extraLabel || '';
     
-    // Enfocar
+    // Enfocar y mostrar modal
     document.getElementById('cat-name').focus();
+    document.getElementById('modal-admin-category')?.classList.add('active');
   } catch (err) {
     alert("Error al cargar categoría: " + err.message);
   }
@@ -2331,9 +2350,25 @@ function resetCategoryForm() {
   document.getElementById('form-admin-category').reset();
   document.getElementById('cat-id').value = '';
   document.getElementById('admin-category-form-title').textContent = "Agregar Nueva Categoría";
+  document.getElementById('modal-admin-category')?.classList.remove('active');
 }
 
-// Vincular escuchadores de categorías a nivel de módulo
+// Vincular botones de apertura y cierre del modal de categoría
+const btnOpenCatModal = document.getElementById('btn-admin-open-category-modal');
+if (btnOpenCatModal) {
+  btnOpenCatModal.addEventListener('click', () => {
+    resetCategoryForm();
+    document.getElementById('modal-admin-category')?.classList.add('active');
+  });
+}
+
+const btnCloseCatModal = document.getElementById('btn-cerrar-modal-category');
+if (btnCloseCatModal) {
+  btnCloseCatModal.addEventListener('click', () => {
+    resetCategoryForm();
+  });
+}
+
 const btnCancelEditCat = document.getElementById('btn-cancel-edit-category');
 if (btnCancelEditCat) {
   btnCancelEditCat.addEventListener('click', resetCategoryForm);
