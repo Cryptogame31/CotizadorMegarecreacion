@@ -1352,6 +1352,84 @@ tr:hover td {
     bottom: calc(120px + env(safe-area-inset-bottom, 0px)) !important;
     z-index: 10000 !important;
   }
+
+  /* ========================================== */
+  /* OPTIMIZACIONES DEL PANEL DE ADMINISTRACIÓN MÓVIL */
+  /* ========================================== */
+  
+  /* Contenedor de pestañas horizontal deslizable */
+  .tab-container {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    gap: 0.5rem;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+    scrollbar-width: none; /* Ocultar barra en Firefox */
+  }
+  
+  .tab-container::-webkit-scrollbar {
+    display: none; /* Ocultar barra en Chrome/Safari */
+  }
+  
+  .tab-btn {
+    flex-shrink: 0;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.85rem !important;
+  }
+  
+  /* Tablas responsivas con desplazamiento horizontal fluido */
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+  }
+  
+  .table-responsive table {
+    width: 100%;
+  }
+  
+  .table-responsive th,
+  .table-responsive td {
+    padding: 0.75rem 0.6rem !important;
+    font-size: 0.82rem !important;
+    white-space: nowrap !important; /* Evita que las celdas se aplasten de forma ilegible */
+  }
+  
+  /* Permitir que la columna de información se ajuste y no se haga infinita */
+  .table-responsive td:nth-child(2) {
+    white-space: normal !important;
+    min-width: 180px !important;
+  }
+  
+  /* Optimización del Calendario en Celulares */
+  .calendar-grid {
+    gap: 0.2rem !important;
+  }
+  
+  .calendar-day-header {
+    font-size: 0.6rem !important;
+    padding: 0.25rem 0 !important;
+  }
+  
+  .calendar-day {
+    min-height: 48px !important;
+    padding: 0.25rem !important;
+    border-radius: 6px !important;
+  }
+  
+  .calendar-day-num {
+    font-size: 0.75rem !important;
+  }
+  
+  .calendar-event-pill {
+    font-size: 0.55rem !important;
+    padding: 0.05rem 0.15rem !important;
+    border-radius: 2px !important;
+    margin-top: 0.1rem !important;
+  }
 }
 
 /* Teléfonos móviles pequeños */
