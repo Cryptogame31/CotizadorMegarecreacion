@@ -42,7 +42,7 @@
   
   <script>
     // Limpieza de caché antigua en actualizaciones
-    const APP_VERSION = '2026_v13';
+    const APP_VERSION = '2026_v14';
     if (window.location.protocol !== 'file:') {
       try {
         if (localStorage.getItem('mr_app_version') !== APP_VERSION) {
@@ -73,7 +73,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Megarecreación">
   
-  <link rel="stylesheet" href="css/styles.css?v=2026_v13">
+  <link rel="stylesheet" href="css/styles.css?v=2026_v14">
 </head>
 <body>
   
@@ -176,7 +176,7 @@
         </div>
 
         <!-- HERO BANNER SPECTACULAR -->
-        <div class="hero-banner-spectacular" style="background: linear-gradient(180deg, rgba(5,6,9,0.2) 0%, rgba(5,6,9,0.85) 100%), url('/assets/hero_bg.jpg') center/cover no-repeat; border-radius: var(--border-radius); height: 260px; margin-bottom: 2rem; display: flex; flex-direction: column; justify-content: center; padding: 2rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-premium), var(--shadow-glow);">
+        <div class="hero-banner-spectacular" id="brand-hero-banner" style="background: linear-gradient(180deg, rgba(5,6,9,0.2) 0%, rgba(5,6,9,0.85) 100%), url('assets/hero_bg.jpg') center/cover no-repeat; border-radius: var(--border-radius); height: 260px; margin-bottom: 2rem; display: flex; flex-direction: column; justify-content: center; padding: 2rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-premium), var(--shadow-glow);">
           <h2 style="font-family: var(--font-title); font-size: 2.2rem; font-weight: 800; color: #fff; text-shadow: 0 4px 15px rgba(0,0,0,0.6); margin-bottom: 0.5rem;">¡Bienvenido al Portal de Diversión!</h2>
           <p style="color: #e2e8f0; text-shadow: 0 2px 8px rgba(0,0,0,0.6); max-width: 600px; font-weight: 500; font-size: 1.05rem;">Alquila los mejores inflables, contrata carros de comida y disfruta de shows espectaculares para tu fiesta o evento.</p>
         </div>
@@ -837,6 +837,35 @@
                   </select>
                 </div>
               </div>
+
+              <!-- Inputs para subir Logo y Fondo de Banner -->
+              <div class="form-grid" style="margin-top: 1.5rem;">
+                <div class="form-group">
+                  <label for="sett-logo-file">Subir Logo Corporativo (PNG/JPG)</label>
+                  <input type="file" id="sett-logo-file" accept="image/*" style="padding: 0.4rem; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 8px; width: 100%; color: #fff;">
+                  <span style="font-size:0.7rem; color:var(--text-secondary); margin-top:0.25rem; display:block;">Se recomienda una imagen cuadrada (máx 300x300 px) para optimizar velocidad.</span>
+                </div>
+                <div class="form-group">
+                  <label for="sett-bg-file">Subir Fondo del Banner (JPG/PNG)</label>
+                  <input type="file" id="sett-bg-file" accept="image/*" style="padding: 0.4rem; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 8px; width: 100%; color: #fff;">
+                  <span style="font-size:0.7rem; color:var(--text-secondary); margin-top:0.25rem; display:block;">Se recomienda una imagen rectangular optimizada (máx 1200x500 px).</span>
+                </div>
+              </div>
+
+              <!-- Previsualización de Logo y Banner -->
+              <div class="form-grid" style="margin-top: 1.5rem; align-items: end;">
+                <div class="form-group">
+                  <label>Vista Previa de Logo</label>
+                  <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 0.75rem; border-radius: 8px; text-align: center; min-height: 90px; display: flex; align-items: center; justify-content: center;">
+                    <img id="sett-logo-preview" src="assets/logo.jpg" style="max-height: 70px; border-radius: 6px; display: block;" alt="Previsualización Logo">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Vista Previa de Banner</label>
+                  <div id="sett-bg-preview" style="background: linear-gradient(180deg, rgba(5,6,9,0.2) 0%, rgba(5,6,9,0.85) 100%), url('assets/hero_bg.jpg') center/cover no-repeat; border-radius: 8px; height: 90px; border: 1px solid var(--glass-border);"></div>
+                </div>
+              </div>
+
               <button type="submit" class="btn-primary" style="margin-top: 1.5rem;">Guardar y Aplicar Cambios</button>
             </form>
           </div>
@@ -1118,7 +1147,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   
   <!-- SCRIPT SPA PRINCIPAL -->
-  <script type="module" src="js/app.js?v=2026_v13"></script>
+  <script type="module" src="js/app.js?v=2026_v14"></script>
 
 </body>
 </html>

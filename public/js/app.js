@@ -232,7 +232,8 @@ function updateBrandingElements() {
   // Logo en barra de escritorio
   const logoWrapper = document.getElementById('brand-logo-wrapper');
   if (logoWrapper) {
-    logoWrapper.innerHTML = `<img src="assets/logo.jpg" style="max-height: 65px; border-radius: 8px;" alt="Logo ${name}" onerror="this.src='https://placehold.co/60x60?text=Mega'">`;
+    const logoSrc = settings.logoBase64 || 'assets/logo.jpg';
+    logoWrapper.innerHTML = `<img src="${logoSrc}" style="max-height: 65px; border-radius: 8px;" alt="Logo ${name}" onerror="this.src='https://placehold.co/60x60?text=Mega'">`;
   }
 
   const sbTitle = document.getElementById('brand-sidebar-title');
@@ -244,11 +245,19 @@ function updateBrandingElements() {
   // Móvil
   const mLogoWrapper = document.getElementById('brand-mobile-logo-wrapper');
   if (mLogoWrapper) {
-    mLogoWrapper.innerHTML = `<img src="assets/logo.jpg" style="max-height: 28px; border-radius: 4px;" alt="Logo">`;
+    const logoSrc = settings.logoBase64 || 'assets/logo.jpg';
+    mLogoWrapper.innerHTML = `<img src="${logoSrc}" style="max-height: 28px; border-radius: 4px;" alt="Logo">`;
   }
 
   const mobTitle = document.getElementById('brand-mobile-title');
   if (mobTitle) mobTitle.textContent = name.toUpperCase();
+
+  // Fondo de Hero Banner
+  const heroBanner = document.getElementById('brand-hero-banner');
+  if (heroBanner) {
+    const bgSrc = settings.bgBase64 || 'assets/hero_bg.jpg';
+    heroBanner.style.backgroundImage = `linear-gradient(180deg, rgba(5,6,9,0.2) 0%, rgba(5,6,9,0.85) 100%), url('${bgSrc}')`;
+  }
 
   // WA Link
   const phone = settings.telefonoContacto1 || '3163048505';
@@ -1984,6 +1993,46 @@ if (formCreateUser) {
   });
 }
 
+function resizeAndCompressImage(file, maxWidth, maxHeight, format = 'image/jpeg', quality = 0.85) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL(format, quality));
+      };
+      img.onerror = (err) => reject(err);
+      img.src = e.target.result;
+    };
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
+  });
+}
+
+let tempLogoBase64 = null;
+let tempBgBase64 = null;
+
 // 4. Configuraciones Generales y Tema
 function renderAdminSettings() {
   const settings = systemSettings || {};
@@ -1993,6 +2042,59 @@ function renderAdminSettings() {
   document.getElementById('sett-contact-phone').value = settings.telefonoContacto1 || '';
   document.getElementById('sett-theme-palette').value = settings.themePalette || 'emerald';
   document.getElementById('sett-theme-font').value = settings.themeFont || 'outfit';
+
+  // Reseteamos temporales
+  tempLogoBase64 = null;
+  tempBgBase64 = null;
+
+  // Actualizar las vistas previas en el formulario
+  const logoPreview = document.getElementById('sett-logo-preview');
+  if (logoPreview) {
+    logoPreview.src = settings.logoBase64 || 'assets/logo.jpg';
+  }
+  const bgPreview = document.getElementById('sett-bg-preview');
+  if (bgPreview) {
+    bgPreview.style.backgroundImage = `linear-gradient(180deg, rgba(5,6,9,0.2) 0%, rgba(5,6,9,0.85) 100%), url('${settings.bgBase64 || 'assets/hero_bg.jpg'}')`;
+  }
+}
+
+// Vincular inputs de archivos para previsualización inmediata y compresión
+const logoFileInput = document.getElementById('sett-logo-file');
+if (logoFileInput) {
+  logoFileInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      // Logos transparentes conservan PNG
+      tempLogoBase64 = await resizeAndCompressImage(file, 300, 300, 'image/png');
+      const logoPreview = document.getElementById('sett-logo-preview');
+      if (logoPreview) {
+        logoPreview.src = tempLogoBase64;
+      }
+    } catch (err) {
+      console.error("Error al procesar logo:", err);
+      alert("No se pudo cargar la imagen del logo.");
+    }
+  });
+}
+
+const bgFileInput = document.getElementById('sett-bg-file');
+if (bgFileInput) {
+  bgFileInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      // Fondos de banner conservan JPG con compresión
+      tempBgBase64 = await resizeAndCompressImage(file, 1200, 500, 'image/jpeg', 0.8);
+      const bgPreview = document.getElementById('sett-bg-preview');
+      if (bgPreview) {
+        bgPreview.style.backgroundImage = `linear-gradient(180deg, rgba(5,6,9,0.2) 0%, rgba(5,6,9,0.85) 100%), url('${tempBgBase64}')`;
+      }
+    } catch (err) {
+      console.error("Error al procesar fondo:", err);
+      alert("No se pudo cargar la imagen del banner.");
+    }
+  });
 }
 
 const formSettings = document.getElementById('form-admin-settings');
@@ -2000,7 +2102,9 @@ if (formSettings) {
   formSettings.addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    // Obtenemos los settings existentes para no borrar campos no modificados (como imágenes anteriores)
     const settings = {
+      ...(systemSettings || {}),
       businessName: document.getElementById('sett-business-name').value,
       businessSubtitle: document.getElementById('sett-business-subtitle').value,
       telefonoContacto1: document.getElementById('sett-contact-phone').value,
@@ -2008,9 +2112,16 @@ if (formSettings) {
       themeFont: document.getElementById('sett-theme-font').value
     };
 
+    if (tempLogoBase64) {
+      settings.logoBase64 = tempLogoBase64;
+    }
+    if (tempBgBase64) {
+      settings.bgBase64 = tempBgBase64;
+    }
+
     try {
       await DB.saveSettings(settings);
-      alert("¡Configuraciones guardadas y aplicadas con éxito!");
+      alert("¡Configuraciones de marca e imágenes guardadas con éxito!");
       window.location.reload();
     } catch (err) {
       alert("Error al guardar: " + err.message);
